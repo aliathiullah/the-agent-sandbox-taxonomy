@@ -1,0 +1,79 @@
+You are updating the SKILL.md file for the Agent Sandbox Taxonomy (AST) project.
+
+## Context
+
+This repository contains:
+- `README.md` — The full Agent Sandbox Taxonomy specification, including the taxonomy (Parts 1–5), the framework (Parts 6–8), and appendices (A–D) with product-specific data.
+- `SKILL.md` — A product-agnostic skill file derived from README.md. When loaded by AI agents, it enables them to: (1) score any sandbox product against the AST, and (2) help users choose and compose the right sandbox stack.
+- `SKILL_UPDATE_PROMPT.txt` — This file.
+
+## Your Task
+
+The README.md has been updated. You need to read both files and synchronize SKILL.md with any changes to the taxonomy or framework in README.md.
+
+### Step 1: Read Both Files
+
+Read `README.md` in full. Then read `SKILL.md` in full.
+
+### Step 2: Identify What Changed
+
+Compare the two. Look for changes in README.md that affect the methodology — the parts SKILL.md is derived from. Focus on:
+
+- **Defense layers** (definitions, relationships, key questions) — Parts 1–2 of README
+- **Threats** (categories, threat-to-layer map, vector vs threat distinction) — Part 3 of README
+- **Scoring system** (strength scale, granularity scale, portability tags, scoring rules) — Part 4 of README
+- **Fingerprint format** (notation, 0 vs dash semantics, separator conventions) — Part 4 of README
+- **Glossary** (terms and definitions) — Part 5 of README
+- **Mechanism reference tables** (mechanisms, S/G scores, how-it-works descriptions) — Appendix A of README
+- **Composition rules** (stacking rule, patterns, anti-patterns) — Parts 6–7 of README
+- **Decision checklist** (questions, answer-to-layer mappings) — Part 8 of README
+
+Ignore changes that are purely product-specific (Appendices B, C, D) — SKILL.md is intentionally product-agnostic.
+
+### Step 3: Apply Changes to SKILL.md
+
+Update SKILL.md to reflect the changes. Preserve these invariants:
+
+1. **No product names or brands.** Mechanism references use generic terms (e.g., "MicroVM — minimal VMM" not a specific product name). If README adds a new mechanism with a product example, extract the generic mechanism and its S/G score.
+
+2. **Preserve the structure.** SKILL.md has 8 parts plus a quick reference card. Map README changes to the correct part:
+   - README Parts 1–2 (layers) → SKILL.md Part 1
+   - README Part 3 (threats) → SKILL.md Part 2
+   - README Part 4 (scoring) → SKILL.md Part 3
+   - README Part 4 (fingerprint) → SKILL.md Part 4
+   - README Appendix A (mechanisms) → SKILL.md Part 5
+   - README Part 5 (glossary) → SKILL.md Part 6
+   - README Parts 6–7 (composition) + Part 8 (checklist) → SKILL.md Parts 7–8
+   - Quick Reference Card → update if any numbers, scales, or mnemonics changed
+
+3. **Keep the scoring procedure** (Part 7 of SKILL.md) and **recommendation procedure** (Part 8 of SKILL.md) in sync with any changes to scoring rules or the decision checklist.
+
+4. **Keep the validation checklist** (Step 5 of the scoring procedure) accurate. If new scoring rules or edge cases were added, add corresponding sanity checks.
+
+5. **Keep the anti-patterns** current. If README adds new anti-patterns or modifies existing ones, reflect that.
+
+6. **Keep the quick reference card** at the bottom accurate as a one-screen cheat sheet.
+
+### Step 4: Validate
+
+After updating, verify:
+- [ ] Every defense layer in README is in SKILL.md with matching definition
+- [ ] Every threat in README is in SKILL.md with matching definition
+- [ ] The threat-to-layer defense map matches README
+- [ ] All scoring scales (S, G, portability) match README
+- [ ] All mechanism reference tables match Appendix A of README (minus product names)
+- [ ] The fingerprint format description matches README
+- [ ] The glossary matches README
+- [ ] The composition stacking rule matches README
+- [ ] All composition patterns in README are in SKILL.md
+- [ ] All anti-patterns in README are in SKILL.md
+- [ ] The decision checklist questions and mappings match README
+- [ ] The quick reference card reflects current scales and mnemonics
+- [ ] No product names, brand names, or product-specific data leaked into SKILL.md
+
+### What NOT to Change
+
+- Do not add product score cards, fingerprint comparison tables, or threat coverage matrices from the appendices. Those are product-specific.
+- Do not change the purpose or audience of SKILL.md. It is for agents evaluating and recommending sandboxes.
+- Do not remove the scoring procedure or recommendation procedure. Those are the core actionable content.
+- Do not change the file from markdown format.
