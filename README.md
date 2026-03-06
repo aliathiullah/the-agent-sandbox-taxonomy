@@ -169,13 +169,36 @@ Threats don't respect layer boundaries. A single destructive operation might inv
 |---|---|---|
 | **T1 Exfiltration** | L3 + L4 + L5 | L3 blocks reading secrets, L4 blocks sending them out, L5 ensures they're not present. Any single layer alone leaks. |
 | **T2 Supply Chain** | L3 + L4 + L7 | L4 controls download sources, L3 protects filesystem integrity (prevents binary replacement), L7 detects compromises after the fact. |
-| **T3 Destructive Ops** | L3 + **L4** + L6 | L3 covers local destruction. **Remote destruction is a network operation**: needs L4 to block access or L6 to block the action semantically. L1 alone doesn't protect remote resources. |
+| **T3 Destructive Ops** | L1 + L3 (local) / L4 + L6 (remote) | L1+L3 covers local destruction. **Remote destruction is a network operation**: needs L4 to block access AND L6 to block the action semantically. L1 alone doesn't protect remote resources. |
 | **T4 Lateral Movement** | L4 + L1 | L4 blocks outbound access. L1 provides network namespace isolation as secondary boundary. |
-| **T5 Persistence** | L3 + L1 + L6 | Ephemeral sandboxes (L1 destroyed) inherently prevent persistence. Persistent sandboxes need L3 to block init file writes and L6 to block scheduled task creation. |
+| **T5 Persistence** | L1 + L3 + L6 | Ephemeral sandboxes (L1 destroyed) inherently prevent persistence. Persistent sandboxes need L3 to block init file writes and L6 to block scheduled task creation. |
 | **T6 Privilege Escalation** | L1 + L2 | L1 strength directly determines escape resistance. Hardware boundaries are fundamentally harder to escape than software boundaries. |
 | **T7 Denial of Service** | L2 + L1 | L2 caps resources. Enforcement must be outside the sandbox (cgroups, hypervisor allocation). |
 
 **Threats are not independent.** T2 is often a vector to T1/T3/T4. T5 extends the window for any other threat. T6 nullifies all other layers. T7 can be a direct goal or a side effect.
+
+### Threat Assessment Rules
+
+Threat coverage is assessed **mechanically** from layer scores, not by intuition. For each threat, the primary defense layers have a **threshold of S >= 2** (software-enforced or stronger). The rating is determined by how many primary layers meet the threshold:
+
+- **●** (Addressed): **All** primary layers meet the threshold
+- **◐** (Partial): **At least one** primary layer meets the threshold, but not all
+- **○** (Not addressed): **No** primary layer meets the threshold
+
+| Threat | Primary Layers | ● (all meet threshold) | ◐ (some meet) | ○ (none meet) |
+|---|---|---|---|---|
+| **T1** | L3, L4, L5 | All three >= 2 | At least one >= 2 | None >= 2 |
+| **T2** | L3, L4, L7 | All three >= 2 | At least one >= 2 | None >= 2 |
+| **T3-L** | L1, L3 | Both >= 2 | One >= 2 | Neither >= 2 |
+| **T3-R** | L4, L6 | Both >= 2 | One >= 2 | Neither >= 2 |
+| **T4** | L4, L1 | Both >= 2 | One >= 2 | Neither >= 2 |
+| **T5** | L1, L3, L6 (or ephemeral) | All three >= 2, or ephemeral L1 >= 4 | At least one >= 2 | None >= 2 |
+| **T6** | L1, L2 | L1 >= 3 AND L2 >= 2 | At least one >= 2 | Neither >= 2 |
+| **T7** | L2, L1 | Both >= 2 | At least one >= 2 | Neither >= 2 |
+
+T3 is always split into local (T3-L) and remote (T3-R). The combined T3 rating uses the lower of the two. Notation: `L●/R○`, `L●/R◐`, `full L+R` (both ●).
+
+Treat `~` (layer not addressed) as 0 for threshold comparisons.
 
 ---
 
@@ -286,10 +309,10 @@ No single product covers all seven layers well. This is by design: products that
 The fingerprint makes this visible. Where one product shows `—` or `0`, another shows `3` or `4`. That's the complement. Stack them and the gaps disappear:
 
 ```
-E2B       4/4/4/0/2/-/2  ← strong box, open network, no governance
-Warden    -/-/1/2/3/2/3  ← no box, but governs behavior + secrets
-────────────────────────
-Composed  4/4/4/2/3/2/3  ← take the max at each layer
+Firecracker VM       4/4/4/2/1/-/1  <- strong box, weak credentials, no governance
+Network Proxy        2/0/2/2/2/2/2  <- no box, but governs behavior + secrets
+-----------------------------------
+Composed             4/4/4/2/2/2/2  <- take the max at each layer
 ```
 
 When composing, **take the maximum strength at each layer**. The composed stack is only as weak as its weakest uncovered layer.
@@ -461,31 +484,30 @@ For full per-product details (granularity scores, mechanism notes, threat breakd
 
 # APPENDIX C: Threat Coverage Matrix
 
-**●** Addressed — the product actively defends against or structurally eliminates this threat (e.g., ephemeral sandbox = T5● because persistence is architecturally impossible). **◐** Partial — some layers contribute but gaps remain. **○** Not addressed — the threat is real but this product provides no defense against it (a gap to fill via composition). T3: `L●/R○` = local mitigated/remote not; `L+R` = both.
+Threat coverage is derived **mechanically** from layer scores using the [threshold rules](#threat-assessment-rules) in Section 3. **●** Addressed — all primary defense layers meet S >= 2. **◐** Partial — at least one primary layer meets the threshold but not all. **○** Not addressed — no primary layer meets the threshold. T3 is split into local (L1+L3) and remote (L4+L6): `L●/R○` = local mitigated/remote not; `full L+R` = both.
 
 <p align="center">
   <img src="assets/threat-coverage.svg" alt="AST Threat Coverage Matrix" width="540"/>
 </p>
 
-**Patterns**: Cloud platforms cluster at T3 ◐ (L●/R○), strong box but an open window for remote destruction. Policy tools score T3 ● and T4 ● but T6 ○. Local OS tools score T7 ○ universally. T2 is universally ◐ or ○.
+**Patterns**: Every product with L1 >= 2 and L3 >= 2 achieves T3-Local ●. T3-Remote is the sharpest differentiator — only products with both L4 >= 2 and L6 >= 2 achieve ●. Three products achieve all-● coverage: Google Agent Sandbox, Claude Code (web), and Copilot coding agent — all combine cloud-managed ephemeral VMs with L4 >= 2 and L6 >= 2. No product scores T7:○ because every product has L1 >= 2.
 
 ### Composition Examples
 
 ```
                          L1/L2/L3/L4/L5/L6/L7
-  E2B                     4/ 4/ 4/ 0/ 2/ -/ 2
-+ Stakpak Warden          -/ -/ 1/ 2/ 3/ 2/ 3
+  E2B                     4/ 4/ 4/ 2/ 1/ -/ 1
++ Stakpak Warden          2/ 0/ 2/ 2/ 2/ 2/ 2
 ──────────────────────────────────────────────────
-= Composed (max)          4/ 4/ 4/ 2/ 3/ 2/ 3   ← gaps filled
+= Composed (max)          4/ 4/ 4/ 2/ 2/ 2/ 2   ← gaps filled
 ```
 
 ```
                          L1/L2/L3/L4/L5/L6/L7
-  Claude Code (local)     3/ -/ 3/ 0/ 3/ 1/ 1
-+ nono                    3/ -/ 3/ 3/ 3/ 2/ 2
-+ Leash                   2/ 2/ 2/ 3/ 2/ 2/ 3
+  Claude Code (local)     3/ -/ 3/ 3/ 1/ 2/ 2
++ nono                    3/ -/ 3/ 3/ 3/ 3/ 3
 ──────────────────────────────────────────────────
-= Composed (max)          3/ 2/ 3/ 3/ 3/ 2/ 3   ← only L1 not at 4
+= Composed (max)          3/ -/ 3/ 3/ 3/ 3/ 3   ← only L2 uncovered
 ```
 
 ---

@@ -324,18 +324,60 @@ For each layer:
 
 ### Step 3: Assess Threat Coverage
 
-For each of the 7 threats, use the threat-to-layer defense map (Part 2) and the product's layer scores to determine coverage:
+Apply the threshold rules below **mechanically** for each threat. Do not eyeball — use the layer scores from Step 2 and the rules to determine the symbol. Treat `~` (not addressed) as 0 for threshold comparisons.
 
 | Rating | Symbol | Meaning |
 |---|---|---|
-| Addressed | **●** | The product actively defends against or structurally eliminates this threat (e.g., ephemeral sandbox = T5● because persistence is architecturally impossible) |
-| Partial | **◐** | Some layers contribute but gaps remain (e.g., local destruction mitigated but remote not) |
-| Not addressed | **○** | The threat is real but this product provides no defense against it (a gap to fill via composition) |
+| Addressed | **●** | All primary defense layers meet their thresholds — the threat is actively defended or structurally eliminated |
+| Partial | **◐** | At least one primary defense layer contributes (meets its threshold) but not all do |
+| Not addressed | **○** | No primary defense layer meets its threshold — the threat is real and unmitigated |
 
-For T3 (Destructive Operations), always distinguish **local vs remote**:
-- Local destruction → primarily L3 + L1
-- Remote destruction → primarily L4 + L6 (network operation)
-- Use notation: `L●/R○` (local mitigated / remote not), `L+R` (both mitigated)
+#### Threat threshold rules
+
+For each threat, the **primary defense layers** and their **thresholds** are listed. Apply them mechanically:
+
+**T1 — Data Exfiltration** (primary: L3, L4, L5)
+- ● if **all three** of L3 >= 2, L4 >= 2, L5 >= 2
+- ◐ if **at least one** of L3 >= 2, L4 >= 2, L5 >= 2
+- ○ if **none** meet the threshold
+
+**T2 — Supply Chain Compromise** (primary: L3, L4, L7)
+- ● if **all three** of L3 >= 2, L4 >= 2, L7 >= 2
+- ◐ if **at least one** of L3 >= 2, L4 >= 2, L7 >= 2
+- ○ if **none** meet the threshold
+
+**T3 — Destructive Operations** (split local/remote, then combine)
+- **T3-Local** (primary: L1, L3): ● if **both** L1 >= 2 AND L3 >= 2; ◐ if **one**; ○ if **neither**
+- **T3-Remote** (primary: L4, L6): ● if **both** L4 >= 2 AND L6 >= 2; ◐ if **one**; ○ if **neither**
+- Use notation: `L●/R○`, `L●/R◐`, `L+R` (both ●), etc.
+
+**T4 — Lateral Movement** (primary: L4, L1)
+- ● if **both** L4 >= 2 AND L1 >= 2
+- ◐ if **one** of L4 >= 2, L1 >= 2
+- ○ if **neither** meets the threshold
+
+**T5 — Persistence** (primary: L1, L3, L6; OR ephemeral)
+- ● if sandbox is **ephemeral** (destroyed after session, L1 >= 4 with ephemeral lifecycle), OR if **all three** of L1 >= 2, L3 >= 2, L6 >= 2
+- ◐ if **at least one** of L1 >= 2, L3 >= 2, L6 >= 2
+- ○ if **none** meet the threshold
+
+**T6 — Privilege Escalation** (primary: L1, L2)
+- ● if **both** L1 >= 3 AND L2 >= 2 (kernel/hardware isolation + external resource caps)
+- ◐ if **at least one** of L1 >= 2, L2 >= 2
+- ○ if **neither** meets the threshold
+
+**T7 — Denial of Service** (primary: L2, L1)
+- ● if **both** L2 >= 2 AND L1 >= 2
+- ◐ if **at least one** of L2 >= 2, L1 >= 2
+- ○ if **neither** meets the threshold
+
+#### T3 notation
+
+Always split T3 into local and remote:
+- `L●/R○` = local mitigated, remote not
+- `L●/R◐` = local mitigated, remote partially
+- `full L+R` = both fully mitigated
+- Use the combined result for the single T3 column in the threat matrix: if both are ●, T3 = ●; if mixed, T3 = the lower of the two
 
 ### Step 4: Produce the Score Card
 
@@ -366,9 +408,10 @@ Run these sanity checks on your score card:
 - **No upper layer is stronger than L1** in strength. If L1 is S:2, no other layer can realistically be S:4 (the isolation foundation is weaker than the claim).
 - **Cooperative mechanisms are always S:1.** If you scored something S:2+ but the process can bypass it, downgrade.
 - **L4:0 with credentials present = T1 risk.** Flag this explicitly.
-- **Remote destruction (T3/R) requires L4 or L6.** L1 alone does not protect remote resources. If L4 is 0 and L6 is 0 or —, T3 remote is ○.
-- **Ephemeral sandbox + L1 destroyed = T5 ●.** Persistent sandboxes without L3/L6 coverage leave T5 open.
-- **T2 is universally hard.** Most products score ◐ or ○. Don't over-credit.
+- **Threat scores must match threshold rules.** Re-derive each threat symbol from the layer scores using the rules in Step 3. If your intuitive assessment differs from the mechanical result, the mechanical result wins.
+- **No product should have T7:○ if L1 >= 2.** Strong compute isolation provides partial DoS defense even without dedicated resource caps.
+- **Every product with L1 >= 2 AND L3 >= 2 gets T3-Local ●.** If you have any isolation at all, local destructive operations are addressed at baseline.
+- **T2 is universally hard.** Requires L3 >= 2, L4 >= 2, AND L7 >= 2 for ●. Most products score ◐.
 
 ---
 
