@@ -39,30 +39,15 @@ The Taxonomy decomposes sandboxing into **seven isolation layers** and maps them
 
 Every sandbox enforces some combination of seven layers. No sandbox covers all seven equally. Most cover two or three well and ignore the rest.
 
-```
-┌─────────────────────────────────────────────────────┐
-│  L7  OBSERVABILITY & AUDIT                          │
-│      Can you see what the agent did?                │
-├─────────────────────────────────────────────────────┤
-│  L6  ACTION GOVERNANCE                              │
-│      Can you control what operations it performs?   │
-├─────────────────────────────────────────────────────┤
-│  L5  CREDENTIAL & SECRET MANAGEMENT                 │
-│      How are secrets handled around the agent?      │
-├─────────────────────────────────────────────────────┤
-│  L4  NETWORK BOUNDARY                               │
-│      What can it communicate with?                  │
-├─────────────────────────────────────────────────────┤
-│  L3  FILESYSTEM BOUNDARY                            │
-│      What can it read, write, and delete?           │
-├─────────────────────────────────────────────────────┤
-│  L2  RESOURCE LIMITS                                │
-│      Is it constrained in CPU, memory, disk, time?  │
-├─────────────────────────────────────────────────────┤
-│  L1  COMPUTE ISOLATION                              │
-│      What separates the agent from the host?        │
-└─────────────────────────────────────────────────────┘
-```
+| Layer | Name | Key Question |
+|---|---|---|
+| **L7** | Observability & Audit | Can you see what the agent did? |
+| **L6** | Action Governance | Can you control what operations it performs? |
+| **L5** | Credential & Secret Management | How are secrets handled around the agent? |
+| **L4** | Network Boundary | What can it communicate with? |
+| **L3** | Filesystem Boundary | What can it read, write, and delete? |
+| **L2** | Resource Limits | Is it constrained in CPU, memory, disk, time? |
+| **L1** | Compute Isolation | What separates the agent from the host? |
 
 Layers are numbered bottom-up because lower layers are foundational. Strong L1 makes L3 easier — a microVM gets a fresh filesystem by default. But **upper layers cannot be derived from lower ones**. A microVM with perfect L1 but no L4 still lets the agent exfiltrate secrets via a single outbound request. A system with impeccable L1–L5 but no L7 gives you no way to detect misuse or improve policies.
 
