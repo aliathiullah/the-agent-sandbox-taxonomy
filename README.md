@@ -135,14 +135,30 @@ Agents can cause seven categories of harm. Sandboxes exist to contain them.
 | **T6** | **Privilege Escalation** | Agent escapes the sandbox entirely | Exploits kernel CVE, container escape |
 | **T7** | **Denial of Service** | Agent consumes excessive resources, degrading host or other tenants | Fork bomb, memory bomb, disk filling |
 
-### Prompt Injection Is a Vector, Not a Threat
+### Sandboxes Are Orthogonal to Agent Alignment
 
-Prompt injection is **not an eighth threat**; it is a **vector** that activates T1–T7. No sandbox technology can prevent prompt injection itself, because that's an LLM-layer problem. Sandboxes limit the **blast radius** when injection succeeds.
+Prompt injection, hallucination, misalignment, bad context, compromised dependencies — these are all reasons an agent might **decide** to do something harmful. They are **vectors**, not threats. The taxonomy deliberately excludes them because sandboxes operate at a different level: they control what an agent **can** do, not what it **chooses** to do.
+
+Getting an agent to make good decisions is an **agent alignment** problem (guardrails, RLHF, system prompts, context filtering). Preventing damage when it makes a bad decision is a **sandboxing** problem. The two are complementary but independent. A perfectly aligned agent still benefits from sandboxing (defense-in-depth). A perfectly sandboxed agent with bad alignment is still contained.
 
 ```
-  Prompt Injection ──┐
-  Hallucination ─────┼──▶ Agent attempts harmful action ──▶ Sandbox boundary blocks it
-  Malicious code ────┘
+                              ┌─────────────────────┐
+  Prompt Injection ──┐        │                     │
+  Hallucination ─────┤        │  Agent Alignment    │  ← why the agent decided
+  Misalignment ──────┼──▶     │  (out of scope)     │
+  Bad context ───────┤        │                     │
+  Malicious code ────┘        └────────┬────────────┘
+                                       │
+                                       ▼
+                              Agent attempts harmful action
+                                       │
+                                       ▼
+                              ┌─────────────────────┐
+                              │                     │
+                              │  Sandbox boundary   │  ← what the agent can do
+                              │  (this taxonomy)    │
+                              │                     │
+                              └─────────────────────┘
 ```
 
 ### How Layers Defend Against Threats
@@ -249,7 +265,8 @@ See **[Appendix B](#appendix-b-product-score-cards)** for product score cards an
 | **Escape hatch** | A mechanism allowing bypass of sandbox restrictions; its existence caps strength at S:1 |
 | **Opaque enforcement** | Enforcement that works regardless of the sandboxed process's behavior. Cannot be circumvented; S:2–3 |
 | **Structural enforcement** | Enforcement where the protected resource doesn't exist inside the sandbox. Nothing to bypass; S:4 |
-| **Vector** | The method by which a threat is triggered (prompt injection, hallucination, malicious tool), distinct from the threat itself |
+| **Agent alignment** | The problem of getting an agent to make good decisions (guardrails, RLHF, context filtering). Complementary to but independent of sandboxing |
+| **Vector** | An attack path through which a threat is triggered (prompt injection, hallucination, misalignment, compromised dependency). Distinct from the threat (T1–T7) it activates. Sandboxes are vector-agnostic |
 
 ---
 ---
