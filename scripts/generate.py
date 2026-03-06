@@ -15,6 +15,7 @@ No external dependencies beyond PyYAML.
 import yaml
 import os
 from pathlib import Path
+from datetime import datetime
 
 SCRIPT_DIR = Path(__file__).parent
 REPO_ROOT = SCRIPT_DIR.parent
@@ -82,6 +83,16 @@ def load_products():
     return data["products"]
 
 
+def get_review_label(product):
+    """Return a display label for the product's review status."""
+    lr = product.get("last_reviewed")
+    if lr is None:
+        return "Pending Review"
+    if isinstance(lr, datetime):
+        return lr.strftime("%Y-%m-%d")
+    return str(lr)
+
+
 def get_strength(product, layer):
     layer_data = product["layers"].get(layer, {})
     return layer_data.get("s")
@@ -112,13 +123,14 @@ def generate_heatmap(products):
     cell_w = 72
     cell_h = 28
     name_col_w = 200
+    review_col_w = 100
     header_h = 56
     row_gap = 3
     legend_h = 50
 
     total_rows = len(products)
     total_h = header_h + total_rows * (cell_h + row_gap) + legend_h + 20
-    total_w = name_col_w + len(LAYERS) * (cell_w + row_gap) + 16
+    total_w = name_col_w + len(LAYERS) * (cell_w + row_gap) + review_col_w + 16
 
     lines = []
     lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {total_w} {total_h}" font-family="{FONT}">')
@@ -127,11 +139,16 @@ def generate_heatmap(products):
     # title
     lines.append(f'<text x="{total_w/2}" y="22" fill="{TEXT_COLOR}" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="-0.3">Product Score Cards — Strength · Granularity</text>')
 
-    # column headers
+    # column headers — layers
     for i, layer in enumerate(LAYERS):
         x = name_col_w + i * (cell_w + row_gap) + cell_w / 2
         lines.append(f'<text x="{x}" y="{header_h - 20}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">{LAYER_NAMES[layer]}</text>')
         lines.append(f'<text x="{x}" y="{header_h - 6}" fill="{ACCENT_COLOR}" font-size="10" font-weight="700" text-anchor="middle">{layer}</text>')
+
+    # column header — review status
+    review_x = name_col_w + len(LAYERS) * (cell_w + row_gap) + review_col_w / 2
+    lines.append(f'<text x="{review_x}" y="{header_h - 20}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">Last</text>')
+    lines.append(f'<text x="{review_x}" y="{header_h - 6}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">Reviewed</text>')
 
     y = header_h
     for p in products:
@@ -163,6 +180,11 @@ def generate_heatmap(products):
                 label = f"{s}.{g}" if g is not None else str(s)
 
             lines.append(f'<text x="{x + cell_w/2}" y="{y + cell_h/2 + 1}" fill="{txt}" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">{label}</text>')
+
+        # review status — subtle grey text, no box
+        review_label = escape_xml(get_review_label(p))
+        rx = name_col_w + len(LAYERS) * (cell_w + row_gap) + review_col_w / 2
+        lines.append(f'<text x="{rx}" y="{y + cell_h/2 + 1}" fill="{MUTED_COLOR}" font-size="8" text-anchor="middle" dominant-baseline="middle">{review_label}</text>')
 
         y += cell_h + row_gap
 
@@ -211,6 +233,7 @@ def generate_threat_coverage(products):
     cell_w = 68
     cell_h = 28
     name_col_w = 200
+    review_col_w = 100
     header_h = 56
     row_gap = 3
     legend_h = 50
@@ -218,7 +241,7 @@ def generate_threat_coverage(products):
 
     total_rows = len(products)
     total_h = header_h + total_rows * (cell_h + row_gap) + legend_h + 20
-    total_w = name_col_w + len(THREATS) * (cell_w + row_gap) + 16
+    total_w = name_col_w + len(THREATS) * (cell_w + row_gap) + review_col_w + 16
 
     threat_names = {
         "T1": "Exfiltration",
@@ -241,6 +264,11 @@ def generate_threat_coverage(products):
         lines.append(f'<text x="{x}" y="{header_h - 20}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">{threat_names[threat]}</text>')
         lines.append(f'<text x="{x}" y="{header_h - 6}" fill="{ACCENT_COLOR}" font-size="10" font-weight="700" text-anchor="middle">{threat}</text>')
 
+    # column header — review status
+    review_x = name_col_w + len(THREATS) * (cell_w + row_gap) + review_col_w / 2
+    lines.append(f'<text x="{review_x}" y="{header_h - 20}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">Last</text>')
+    lines.append(f'<text x="{review_x}" y="{header_h - 6}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">Reviewed</text>')
+
     y = header_h
     for p in products:
         name = escape_xml(p["name"])
@@ -253,6 +281,11 @@ def generate_threat_coverage(products):
             cy = y + cell_h / 2
 
             lines.extend(_threat_shape(level, cx, cy, indicator_r))
+
+        # review status — subtle grey text, no box
+        review_label = escape_xml(get_review_label(p))
+        rx = name_col_w + len(THREATS) * (cell_w + row_gap) + review_col_w / 2
+        lines.append(f'<text x="{rx}" y="{y + cell_h/2 + 1}" fill="{MUTED_COLOR}" font-size="8" text-anchor="middle" dominant-baseline="middle">{review_label}</text>')
 
         y += cell_h + row_gap
 

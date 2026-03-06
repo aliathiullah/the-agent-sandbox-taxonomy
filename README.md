@@ -2,6 +2,10 @@
 
 *Version 1.0, March 2026*
 
+> **⚠ Work in Progress — Pending Community Review**
+>
+> This taxonomy and the product scores within it are still a work in progress and have **not yet been reviewed by the community**. The agent sandbox space is evolving quickly and some information may already be out of date. Product scores in [`products.yaml`](products.yaml) include a `last_reviewed` timestamp — entries showing `null` have not been independently verified. We welcome contributions, corrections, and review from the community. Please open an issue or PR if you spot inaccuracies.
+
 An open taxonomy and scoring framework for evaluating AI agent sandboxes. It decomposes sandboxing into **7 defense layers**, maps them against **7 threat categories**, and scores each mechanism on **3 dimensions** (strength, granularity, portability), producing comparable fingerprints for any product. Includes score cards for 18 sandbox tools, a composition framework for stacking complementary products, and a decision checklist for choosing the right sandbox stack.
 
 <p align="center">
