@@ -210,21 +210,23 @@ How fine-grained is the control at this layer?
 
 ### Portability
 
-A flat tag answering: **what must already be in place to use this tool?**
+A flat list of tags answering: **what OS does it run on, and what infrastructure does it need?**
 
-| Tag | Meaning |
-|---|---|
-| **any-os** | Works on Linux, macOS, and Windows |
-| **linux+mac** | Works on Linux and macOS (may use different mechanisms per OS) |
-| **linux-only** | Requires Linux (often kernel ≥5.13 for Landlock) |
-| **windows** | Supports Windows (may be in addition to other OSes) |
-| **cloud-managed** | Runs in vendor's cloud; OS abstracted away |
-| **needs-docker** | Requires Docker or compatible container runtime |
-| **needs-kvm** | Requires `/dev/kvm` (bare metal or nested virtualization) |
-| **needs-k8s** | Requires a Kubernetes cluster |
-| **no-infra** | Runs directly on the OS; no Docker, no cloud, no cluster |
+Tags cover two dimensions — **OS support** and **infrastructure dependencies** — combined in a single array.
 
-Products may have multiple tags (e.g., `linux+mac, no-infra`).
+| Tag | Dimension | Meaning |
+|---|---|---|
+| **any-os** | OS | Works on Linux, macOS, and Windows |
+| **linux** | OS | Requires Linux |
+| **mac** | OS | Supports macOS |
+| **cloud** | Infra | Runs in vendor's cloud; OS abstracted away |
+| **docker** | Infra | Requires Docker or compatible container runtime |
+| **k8s** | Infra | Requires a Kubernetes cluster |
+| **kvm** | Infra | Requires `/dev/kvm` (bare metal or nested virtualization) |
+
+No infrastructure tag means the tool runs directly on the OS with no extra dependencies.
+
+Products typically have multiple tags (e.g., `[linux, mac]` or `[any-os, cloud]`).
 
 ### The Fingerprint
 
@@ -350,7 +352,7 @@ For compliance or team use, L7 S:2+ with structured logs. Consider cryptographic
 Ephemeral inherently addresses T5. Persistent sandboxes must explicitly address T5 via immutable filesystems or monitored mutation.
 
 **8. What are your portability constraints?**
-No infrastructure → process wrappers (`no-infra`). Docker available → container wrappers, sidecars. Cloud/K8s → full platform range.
+No infrastructure → process wrappers (no infra tag needed). Docker available → container wrappers, sidecars (`docker`). Cloud/K8s → full platform range (`cloud`, `k8s`).
 
 ### After the Checklist
 
