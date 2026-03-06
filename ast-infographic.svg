@@ -10,7 +10,7 @@
   <!-- ===== LEFT: 7 LAYERS ===== -->
   <g transform="translate(16, 58)">
     <rect width="210" height="24" rx="4" fill="#6366f1"/>
-    <text x="105" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">7 ISOLATION LAYERS</text>
+    <text x="105" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">7 DEFENSE LAYERS</text>
 
     <g font-size="10" transform="translate(0, 30)">
       <rect width="210" height="22" rx="3" fill="#f5f3ff"/>
@@ -171,11 +171,11 @@
 
       <rect y="16" width="230" height="15" rx="2" fill="#f5f3ff"/>
       <text x="6" y="27" fill="#555">4/4/4/0/2/-/2</text>
-      <text x="160" y="27" fill="#6366f1" font-family="system-ui, sans-serif" font-size="8">strong box</text>
+      <text x="160" y="27" fill="#6366f1" font-family="system-ui, sans-serif" font-size="8">firecracker vm</text>
 
       <rect y="33" width="230" height="15" rx="2" fill="#f0fdf4"/>
       <text x="6" y="44" fill="#555">-/-/1/2/3/2/3</text>
-      <text x="160" y="44" fill="#10b981" font-family="system-ui, sans-serif" font-size="8">policy layer</text>
+      <text x="160" y="44" fill="#10b981" font-family="system-ui, sans-serif" font-size="8">network proxy</text>
 
       <line x1="0" y1="51" x2="155" y2="51" stroke="#d1d5db" stroke-width="0.7"/>
 

@@ -3,18 +3,18 @@
 *Version 1.0 — March 2026*
 
 <p align="center">
-  <img src="ast-infographic.svg" alt="AST 7-7-3 Infographic — 7 Isolation Layers, 7 Threat Categories, 3 Evaluation Dimensions" width="960"/>
+  <img src="ast-infographic.svg" alt="AST 7-7-3 Infographic — 7 Defense Layers, 7 Threat Categories, 3 Evaluation Dimensions" width="960"/>
 </p>
 
 ---
 
 ## How to Use This
 
-This document provides a shared language for discussing what agent sandboxes do, what they don't do, and which threats they address. Remember **7-7-3**: **7** isolation layers, **7** threat categories, **3** evaluation dimensions (strength, granularity, portability).
+This document provides a shared language for discussing what agent sandboxes do, what they don't do, and which threats they address. Remember **7-7-3**: **7** defense layers, **7** threat categories, **3** evaluation dimensions (strength, granularity, portability).
 
 The document has two halves:
 
-**The Taxonomy** (Parts 1–5) defines what sandboxes *are*. Seven isolation layers, seven threat categories, how they relate, how to score mechanisms, and how to fingerprint any product. Use it to describe, classify, and compare solutions on equal terms.
+**The Taxonomy** (Parts 1–5) defines what sandboxes *are*. Seven defense layers, seven threat categories, how they relate, how to score mechanisms, and how to fingerprint any product. Use it to describe, classify, and compare solutions on equal terms.
 
 **The Framework** (Parts 6–8) defines what sandbox consumers should *do*. Composition patterns, anti-patterns, a decision checklist, and stacking rules. Use it to choose the right sandbox stack for your situation.
 
@@ -34,11 +34,11 @@ When someone says "we sandbox our agents," that could mean anything from a Docke
 
 AI coding agents must support full development workflows — package installation, compilation, test execution, database access, browser automation — while treating every generated command as potentially hostile. The agent might misbehave because of a hallucination, a prompt injection, a compromised dependency, or a misunderstanding of intent. The sandbox doesn't care *why*. It enforces boundaries regardless.
 
-The Taxonomy decomposes sandboxing into **seven isolation layers** and maps them against **seven threat categories**, producing a precise vocabulary for what any sandbox does and doesn't do.
+The Taxonomy decomposes sandboxing into **seven defense layers** and maps them against **seven threat categories**, producing a precise vocabulary for what any sandbox does and doesn't do.
 
 ---
 
-## 2. The Seven Isolation Layers
+## 2. The Seven Defense Layers
 
 Every sandbox enforces some combination of seven layers. No sandbox covers all seven equally. Most cover two or three well and ignore the rest.
 
