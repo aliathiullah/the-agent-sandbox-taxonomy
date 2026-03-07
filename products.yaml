@@ -934,3 +934,204 @@ products:
     vars = T1 exfiltration risk. Complements: Network egress firewall (critical),
     credential proxy, SIEM integration'
   last_reviewed: null
+- name: Replit
+  portability:
+  - cloud-managed
+  layers:
+    L1:
+      s: 3
+      g: 1
+      note: Docker namespaces + cgroups; one container per Repl; shared host kernel
+        on GCP VMs; Nix-based full Linux runtime
+    L2:
+      s: 3
+      g: 2
+      note: 1–4 vCPU, 2–8 GB RAM, 2–50 GB disk; cgroups + btrfs quotas; kernel-enforced
+    L3:
+      s: 3
+      g: 1
+      note: Persistent btrfs filesystem; Docker mount namespaces; Margarine/NBD from
+        GCS for storage; not ephemeral
+    L4:
+      s: 2
+      g: 1
+      note: Permissive egress by default; rate-limited; Cloud Armor DDoS protection;
+        no user-configurable firewall or allowlist
+    L5:
+      s: 2
+      g: 2
+      note: AES-256 encryption at rest; env var injection for secrets; secret scanner;
+        SOC 2 Type 2; secrets visible inside container
+    L6:
+      s: 3
+      g: 1
+      note: Seccomp profile with ~44 blocked syscalls; capabilities dropped; runs
+        as non-root runner user; kernel-enforced
+    L7:
+      s: 2
+      g: 1
+      note: Console logs; resource monitor; enterprise audit logging; no OTel or Logpush
+        integration
+  threats:
+    T1: full
+    T2: full
+    T3: full L+R
+    T4: full
+    T5: full
+    T6: full
+    T7: full
+  notes: 'All layers at S:2+. Persistent filesystem means T5 relies on L1+L3+L6
+    (all met). L4 permissive egress is weakest link — rate-limited but no allowlist.
+    Complements: Egress allowlist for L4 upgrade'
+  last_reviewed: null
+- name: Deno Sandbox
+  portability:
+  - cloud-managed
+  - kvm
+  layers:
+    L1:
+      s: 4
+      g: 1
+      note: Firecracker microVM (same tech as AWS Lambda); own kernel per sandbox;
+        KVM hypervisor; <200ms cold boot
+    L2:
+      s: 4
+      g: 2
+      note: 768 MB–4 GB memory, 2 vCPU, 10 GB disk, 30 min max lifetime; hypervisor-enforced
+    L3:
+      s: 3
+      g: 2
+      note: Ephemeral full Linux filesystem; volumes and snapshots opt-in; per-VM
+        mount isolation
+    L4:
+      s: 3
+      g: 2
+      note: Outbound proxy (httpjail-style); allowNet host allowlist; opaque enforcement
+    L5:
+      s: 3
+      g: 3
+      note: Credential proxying — placeholder injected in env, real value substituted
+        on-wire only; secrets never fully present in sandbox
+    L6:
+      s: 3
+      g: 1
+      note: Firecracker minimal VMM; seccomp on host process; no dedicated policy
+        engine; kernel-enforced at VMM level
+    L7:
+      s: 2
+      g: 2
+      note: Deploy OTel inherited; SDK lifecycle events; no dedicated audit logs
+  threats:
+    T1: full
+    T2: full
+    T3: full L+R
+    T4: full
+    T5: full
+    T6: full
+    T7: full
+  notes: 'Strongest isolation tier (Firecracker). Ephemeral VMs inherently address
+    T5. L5 credential proxying is best-in-class. Complements: Dedicated audit logging
+    for L7 upgrade'
+  last_reviewed: null
+- name: Deno Deploy
+  portability:
+  - cloud-managed
+  layers:
+    L1:
+      s: 3
+      g: 1
+      note: V8 isolates with one OS process per deployment; per-process namespaces
+        + seccomp; separate VPCs; Rust runtime
+    L2:
+      s: 3
+      g: 2
+      note: 512 MB memory (cgroup-enforced); 15–40h CPU/month; 1s event-loop limit;
+        WatchDog process monitor
+    L3:
+      s: 3
+      g: 1
+      note: Read-only virtualized filesystem; write operations blocked; Deno KV for
+        persistence
+    L4:
+      s: 2
+      g: 1
+      note: fetch() unrestricted; port 443 raw TCP blocked; no egress allowlist or
+        domain filtering
+    L5:
+      s: 2
+      g: 2
+      note: Env vars + secrets (write-only in dashboard); 3 deployment contexts; SOC
+        2 Type 1; secrets visible at runtime
+    L6:
+      s: 2
+      g: 1
+      note: No subprocess, FFI, or process.exit; fixed capability set enforced by
+        runtime; CLI permission flags don't apply in Deploy
+    L7:
+      s: 2
+      g: 3
+      note: Native OTel support; auto-instrumentation; log streaming; immutable deploy
+        IDs for traceability
+  threats:
+    T1: full
+    T2: full
+    T3: full L+R
+    T4: full
+    T5: full
+    T6: full
+    T7: full
+  notes: 'V8 isolate model with process-level namespaces. L4 fetch() unrestricted
+    is the weakest link — no domain filtering. Read-only FS (L3) is strong. Complements:
+    Egress allowlist for L4 upgrade'
+  last_reviewed: null
+- name: Cloudflare Workers
+  portability:
+  - cloud-managed
+  layers:
+    L1:
+      s: 2
+      g: 1
+      note: V8 isolate in shared OS process; PKU (Protection Keys for Userspace) hardening;
+        seccomp on process; workerd open-source runtime
+    L2:
+      s: 2
+      g: 2
+      note: 128 MB memory (V8 heap limit); 10ms–300s CPU time; 50–10M subrequest
+        limits; platform-enforced
+    L3:
+      s: 3
+      g: 1
+      note: No filesystem access (seccomp-blocked); in-memory VFS only; structural
+        absence of host FS
+    L4:
+      s: 2
+      g: 1
+      note: fetch() unrestricted; SSRF to internal services blocked; no user-configurable
+        egress policy
+    L5:
+      s: 2
+      g: 2
+      note: Write-only secrets (not readable via API after set); per-Worker scope;
+        Secrets Store (beta) for shared secrets
+    L6:
+      s: 2
+      g: 2
+      note: eval() disabled; capability-based bindings model (explicit resource access);
+        no SharedArrayBuffer; software-enforced
+    L7:
+      s: 2
+      g: 3
+      note: Workers Logs; Tail Workers for real-time streaming; Logpush to external
+        destinations; OTel support; 18-month audit log retention
+  threats:
+    T1: full
+    T2: full
+    T3: full L+R
+    T4: full
+    T5: full
+    T6: partial
+    T7: full
+  notes: 'T6 partial: L1:2 (shared process, not kernel/hardware isolation) caps privilege
+    escalation defense. No filesystem is a structural strength (L3). Complements:
+    Stronger compute isolation for L1 upgrade'
+  last_reviewed: null
