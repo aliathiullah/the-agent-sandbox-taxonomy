@@ -33,11 +33,20 @@ The document has two halves:
 
 **The Taxonomy**
 1. [The Problem](#1-the-problem)
-2. [The Seven Defense Layers](#2-the-seven-defense-layers)
-   - [L1 — Compute Isolation](#l1--compute-isolation) · [L2 — Resource Limits](#l2--resource-limits) · [L3 — Filesystem Boundary](#l3--filesystem-boundary) · [L4 — Network Boundary](#l4--network-boundary) · [L5 — Credential & Secret Management](#l5--credential--secret-management) · [L6 — Action Governance](#l6--action-governance) · [L7 — Observability & Audit](#l7--observability--audit)
+2. [The Seven Layers](#2-the-seven-defense-layers)
+   - [L1 Compute Isolation](#l1--compute-isolation)
+   - [L2 Resource Limits](#l2--resource-limits)
+   - [L3 Filesystem Boundary](#l3--filesystem-boundary)
+   - [L4 Network Boundary](#l4--network-boundary)
+   - [L5 Credential & Secret Management](#l5--credential--secret-management)
+   - [L6 Action Governance](#l6--action-governance)
+   - [L7 Observability & Audit](#l7--observability--audit)
 3. [The Seven Threats](#3-the-seven-threats)
 4. [Scoring](#4-scoring)
-   - [Strength](#strength-s-04) · [Granularity](#granularity-g-03) · [Portability](#portability) · [The Fingerprint](#the-fingerprint)
+   - [Strength](#strength-s-04)
+   - [Granularity](#granularity-g-03)
+   - [Portability](#portability)
+   - [The Fingerprint](#the-fingerprint)
 5. [Glossary](#5-glossary)
 
 **The Framework**
@@ -46,9 +55,9 @@ The document has two halves:
 8. [Decision Checklist](#8-decision-checklist)
 
 **Appendices**
-- [A — Layer Mechanism Reference](#appendix-a-layer-mechanism-reference)
-- [B — Product Score Cards](#appendix-b-product-score-cards)
-- [C — Threat Coverage Matrix](#appendix-c-threat-coverage-matrix)
+- [A Layer Mechanism Reference](#appendix-a-layer-mechanism-reference)
+- [B Product Score Cards](#appendix-b-product-score-cards)
+- [C Threat Coverage Matrix](#appendix-c-threat-coverage-matrix)
 - [Conclusion](#conclusion)
 
 ---
