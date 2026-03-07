@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 893 808" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
-<rect width="893" height="808" fill="white" rx="8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 893 839" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+<rect width="893" height="839" fill="white" rx="8"/>
 <text x="446.5" y="22" fill="#111827" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="-0.3">Threat Coverage Matrix</text>
 <text x="234.0" y="36" fill="#6b7280" font-size="9" text-anchor="middle">Exfiltration</text>
 <text x="234.0" y="50" fill="#6366f1" font-size="10" font-weight="700" text-anchor="middle">T1</text>
@@ -374,13 +374,25 @@
 <circle cx="660.0" cy="721.0" r="8" fill="#059669"/>
 <text x="737.0" y="722.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>
 <text x="827.0" y="722.0" fill="#6b7280" font-size="8" text-anchor="middle" dominant-baseline="middle">Pending Review</text>
-<text x="10" y="752" fill="#6b7280" font-size="9" font-weight="600" letter-spacing="1">COVERAGE</text>
-<circle cx="87" cy="748" r="6" fill="#059669"/>
-<text x="99" y="752" fill="#6b7280" font-size="9">Addressed</text>
-<circle cx="177" cy="748" r="6" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
-<path d="M 177,742 A 6,6 0 0,0 177,754 Z" fill="#d97706"/>
-<circle cx="177" cy="748" r="6" fill="none" stroke="#d97706" stroke-width="1.5"/>
-<text x="189" y="752" fill="#6b7280" font-size="9">Partial</text>
-<circle cx="255" cy="748" r="6" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
-<text x="267" y="752" fill="#6b7280" font-size="9">Not addressed</text>
+<text x="14" y="756.0" fill="#111827" font-size="10" font-weight="500">Ona</text>
+<circle cx="234.0" cy="752.0" r="8" fill="#059669"/>
+<circle cx="305.0" cy="752.0" r="8" fill="#059669"/>
+<circle cx="376.0" cy="752.0" r="8" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<path d="M 376.0,744.0 A 8,8 0 0,0 376.0,760.0 Z" fill="#d97706"/>
+<circle cx="376.0" cy="752.0" r="8" fill="none" stroke="#d97706" stroke-width="1.5"/>
+<circle cx="447.0" cy="752.0" r="8" fill="#059669"/>
+<circle cx="518.0" cy="752.0" r="8" fill="#059669"/>
+<circle cx="589.0" cy="752.0" r="8" fill="#059669"/>
+<circle cx="660.0" cy="752.0" r="8" fill="#059669"/>
+<text x="737.0" y="753.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>
+<text x="827.0" y="753.0" fill="#6b7280" font-size="8" text-anchor="middle" dominant-baseline="middle">2026-03-07</text>
+<text x="10" y="783" fill="#6b7280" font-size="9" font-weight="600" letter-spacing="1">COVERAGE</text>
+<circle cx="87" cy="779" r="6" fill="#059669"/>
+<text x="99" y="783" fill="#6b7280" font-size="9">Addressed</text>
+<circle cx="177" cy="779" r="6" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<path d="M 177,773 A 6,6 0 0,0 177,785 Z" fill="#d97706"/>
+<circle cx="177" cy="779" r="6" fill="none" stroke="#d97706" stroke-width="1.5"/>
+<text x="189" y="783" fill="#6b7280" font-size="9">Partial</text>
+<circle cx="255" cy="779" r="6" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<text x="267" y="783" fill="#6b7280" font-size="9">Not addressed</text>
 </svg>

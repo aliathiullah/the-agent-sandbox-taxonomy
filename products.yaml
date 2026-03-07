@@ -1157,3 +1157,74 @@ products:
     Stronger compute isolation for L1 upgrade'
   last_reviewed: null
   evidence_level: docs
+- name: Ona
+  portability:
+  - cloud-managed
+  - linux
+  layers:
+    L1:
+      s: 4
+      g: 1
+      note: Each environment = dedicated EC2 instance (AWS) or GCP VM via cloud hypervisor
+        (Nitro/KVM); own kernel, memory space, network stack; Dev Container runs inside
+        the VM; AMI gitpod/images/gitpod-next/ec2-runner-ami-*
+    L2:
+      s: 4
+      g: 2
+      note: Hypervisor-enforced via EC2 instance type selection; fixed vCPU/RAM/disk
+        at VM creation; environment classes (m6i.large to m6i.8xlarge, custom supported);
+        timeout and auto-delete policies; environment count limits per user
+    L3:
+      s: 4
+      g: 1
+      note: Full independent VM filesystem; no host paths visible; ephemeral by design
+        (wiped on destruction); EBS volume per instance; Veto BPF LSM provides kernel-level
+        file access enforcement (exec gate shipped, file access gate planned). NEEDS
+        REVIEW — filesystem protection granularity not fully documented in API/CLI
+    L4:
+      s: 2
+      g: 2
+      note: VPC security groups and NACLs; customer VPC with native network access;
+        host/port/protocol allowlists via guardrails page; PrivateLink to management
+        plane. WARNING — BPF LSM network enforcement is roadmap (next quarter), current
+        enforcement is VPC-level (software-enforced)
+    L5:
+      s: 2
+      g: 2
+      note: Three-tier secrets (user/project/org) as env vars or files; AES256-GCM
+        at rest + TLS in transit; OIDC for short-lived scoped cloud tokens (eliminates
+        static creds for AWS/GCP). WARNING — memory controls claimed on marketing
+        page but undocumented in API/CLI; default delivery is env vars visible inside
+        VM
+    L6:
+      s: 3
+      g: 2
+      note: 'Veto executable deny list: BPF LSM kernel enforcement; SHA-256 content-addressable
+        hashing; rename/symlink/copy resistant; pre-execution blocking; TOCTOU-free;
+        audit+block modes; max 20 entries. Also command deny list (userspace, agent-only,
+        S:1). CrowdStrike Falcon EDR as sidecar. WARNING — Veto is early access/feature
+        flag (Enterprise); dynamic linker bypass acknowledged'
+    L7:
+      s: 2
+      g: 2
+      note: Comprehensive audit logs (all CRUD on infra/execution/security/org resources);
+        actor types include users, service accounts, runners, environments, agent
+        executions; CLI + REST API + real-time streaming (WatchEvents); Veto events
+        with SHA-256 digest, PID/PPID, timestamps; CrowdStrike Falcon EDR; SOC 2;
+        no tamper-evident chain
+  threats:
+    T1: full
+    T2: full
+    T3: full L+R
+    T4: full
+    T5: full
+    T6: full
+    T7: full
+  notes: 'Gaps: L4 (VPC-level, not kernel-level; BPF network is roadmap), L5 (env
+    var delivery; memory controls undocumented). Complements: Kernel-level network
+    filtering (Ona roadmap) for L4 upgrade, external credential proxy/vault for L5
+    upgrade. Review flags: L3 filesystem granularity undocumented, L4 BPF network
+    is roadmap, L5 memory controls marketing-only, L6 Veto early access with dynamic
+    linker bypass'
+  last_reviewed: '2026-03-07'
+  evidence_level: docs
