@@ -448,9 +448,9 @@ Catalogs mechanisms at each layer with strength and granularity. Products listed
 |---|---|---|---|
 | No restriction | 0 | 0 | Full network access |
 | Proxy env vars | 1 | 2 | **Cooperative**: trivially bypassed via raw sockets |
-| Kernel/hypervisor network filter | 3 | 2 | **Opaque**: iptables, eBPF, or Network Extension |
-| MITM proxy (iptables redirect) | 2 | 3 | **Opaque**: all traffic redirected regardless of process |
-| MITM proxy (kernel-redirected) | 3 | 3 | **Opaque**: TLS-terminating; per-URL/method policies |
+| Kernel/hypervisor network filter | 3 | 2 | **Opaque**: iptables, eBPF, or Network Extension; IP/port/protocol only |
+| MITM proxy (iptables redirect) | 2 | 3 | **Opaque**: all traffic redirected; TLS-terminating; inspects HTTP content |
+| MITM proxy (kernel-redirected) | 3 | 3 | **Opaque**: kernel-redirected + TLS-terminating; per-URL/method/header/body policies |
 | Network disabled | 4 | 1 | **Structural**: no network interface exists |
 
 ## A.5 — L5 Credentials

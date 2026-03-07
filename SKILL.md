@@ -137,8 +137,8 @@ How fine-grained is the control at this layer?
 |---|---|---|
 | **0** | None | No control |
 | **1** | Binary | On/off (e.g., "network: enabled/disabled") |
-| **2** | Allowlist/Blocklist | Lists of permitted or denied resources (e.g., "allow these domains", "block these paths") |
-| **3** | Per-resource policy | Fine-grained rules per resource, action, and context (e.g., "allow GET but deny DELETE", Cedar/OPA policies) |
+| **2** | Allowlist/Blocklist | Lists of permitted or denied resources (e.g., "allow these IPs/ports", "block these paths") |
+| **3** | Per-resource policy | Content-aware rules per resource, action, and context — requires inspecting request content (e.g., HTTP method, URL path, headers, body), not just packet metadata. Examples: "allow GET but deny DELETE", Cedar/OPA policies evaluating request fields, MITM proxies with per-URL rules |
 
 ### Portability Tags
 
@@ -232,13 +232,15 @@ Use these tables to determine the correct S and G scores for each mechanism you 
 
 ### L4 — Network Boundary Mechanisms
 
+**G:2 vs G:3 distinction:** Packet-level filters (iptables, eBPF NetworkPolicy, security groups) operate on IP/port/protocol — they see *where* traffic goes but not *what* it says. This is G:2 (allowlist/blocklist). G:3 requires content-aware inspection: terminating TLS and evaluating HTTP method, URL path, headers, or body. A kernel-enforced eBPF filter and a VPC security group both score G:2 — the enforcement strength (S) differs, but the granularity is the same.
+
 | Mechanism | S | G | How It Works |
 |---|---|---|---|
 | No restriction | 0 | 0 | Full network access |
 | Proxy env vars | 1 | 2 | **Cooperative**: trivially bypassed via raw sockets |
-| Kernel/hypervisor network filter | 3 | 2 | **Opaque**: iptables, eBPF, or Network Extension |
-| MITM proxy (iptables redirect) | 2 | 3 | **Opaque**: all traffic redirected regardless of process |
-| MITM proxy (kernel-redirected) | 3 | 3 | **Opaque**: TLS-terminating; per-URL/method policies |
+| Kernel/hypervisor network filter | 3 | 2 | **Opaque**: iptables, eBPF, or Network Extension; IP/port/protocol only |
+| MITM proxy (iptables redirect) | 2 | 3 | **Opaque**: all traffic redirected; TLS-terminating; inspects HTTP content |
+| MITM proxy (kernel-redirected) | 3 | 3 | **Opaque**: kernel-redirected + TLS-terminating; per-URL/method/header/body policies |
 | Network disabled | 4 | 1 | **Structural**: no network interface exists |
 
 ### L5 — Credential & Secret Management Mechanisms

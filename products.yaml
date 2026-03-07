@@ -377,9 +377,11 @@ products:
         gVisor virtualizes FS; optional PVC
     L4:
       s: 3
-      g: 3
+      g: 2
       note: K8s NetworkPolicy via eBPF (GKE Dataplane v2); default-deny egress; blocks
-        cloud metadata + lateral pod movement; VPC Service Controls
+        cloud metadata + lateral pod movement; VPC Service Controls. Packet-level
+        filter (IP/port/protocol) — cannot inspect HTTP method, URL path, headers,
+        or body; G:2 not G:3
     L5:
       s: 3
       g: 3
@@ -403,8 +405,10 @@ products:
     T5: full
     T6: full
     T7: full
-  notes: 'Most complete coverage of any product scored. gVisor L1 is S:3 (not S:4
-    hardware isolation), which caps all layers. Complements: Kata for L1:4 upgrade'
+  notes: 'Strong coverage across all layers. gVisor L1 is S:3 (not S:4
+    hardware isolation), which caps all layers. L4 is kernel-enforced (S:3) but packet-level
+    only (G:2) — cannot inspect HTTP content. Complements: Kata for L1:4 upgrade,
+    MITM proxy for L4 G:3 content-aware filtering'
   last_reviewed: null
   evidence_level: docs
 - name: StrongDM Leash
