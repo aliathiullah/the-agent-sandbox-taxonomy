@@ -562,6 +562,73 @@ A cloud platform provides excellent L1/L2/L3, but the user deploys with default 
 
 ---
 
+## Part 9: ast-probe — Automated Verification Tool
+
+The taxonomy includes `ast-probe`, a portable Go binary that probes all 7 defense layers from inside a sandbox and produces a machine-readable JSON score card. It replaces documentation-based guessing with verified, evidence-based scores.
+
+### When to Use
+
+- **Verifying product claims** — Run the probe inside a sandbox to check whether documented scores match reality.
+- **Comparing environments** — Run the same binary across bare metal, containers, VMs, and cloud sandboxes to produce comparable fingerprints.
+- **Regression testing** — Include in CI to detect sandbox configuration drift.
+- **Composition validation** — After stacking two products, run the probe inside the composed environment to verify the combined fingerprint.
+
+### How to Use
+
+```bash
+# Download the binary for the target platform
+curl -LO https://github.com/kajogo777/the-agent-sandbox-taxonomy/releases/latest/download/ast-probe-linux-amd64
+chmod +x ast-probe-linux-amd64
+
+# Copy into the sandbox and run
+./ast-probe-linux-amd64 --product "my-sandbox" --out report.json
+
+# Compare fingerprints
+jq .fingerprint report.json
+```
+
+The probe outputs JSON with per-layer test results, an AST fingerprint, and mechanically-derived threat coverage — the same format and scoring rules as the taxonomy itself.
+
+### Safety Guarantees
+
+The probe is designed to be safe to run anywhere, including production systems:
+
+- **Never performs destructive operations.** Tests use permission checks (`OpenFile` then `Close`, zero bytes written), not actual destruction (`unlink`, `rmdir`).
+- **Creates only probe-owned temp files** (`.ast-probe-*` prefix) and immediately removes them.
+- **Network tests** connect to well-known public endpoints only.
+- **Syscall tests** use safe variants (stubs on macOS, least-dangerous flags on Linux).
+- **Never exfiltrates credentials** — scans env var names and lengths, never logs values.
+
+### Known Quirks
+
+**L1 VM detection:** Lightweight VMs without DMI/CPUID signatures (OrbStack, Lima, WSL2) are detected via `/proc/version` kernel string. VMs with vanilla kernels will be scored as bare process (S:0) — a false negative.
+
+**L2 macOS:** Resource limit probing is Linux-only (cgroups). On macOS, L2 returns `S:-1` (not assessed).
+
+**L3 tmpfs awareness:** Writes to tmpfs mounts (e.g., `/tmp` in a container with `--tmpfs`) are not counted as filesystem escapes — they're bounded scratch space, not persistent host paths.
+
+**L4 macOS firewall:** First run on macOS triggers a firewall dialog for the unsigned binary. Both allow and deny produce useful data.
+
+**L5 empty environment:** If no secrets or credential files exist, L5 returns `S:-1` (cannot assess) rather than `S:4`. Positive evidence of filtering/proxying is required for a high score.
+
+**L6 permission vs MAC:** The probe tests whether paths are writable via `open()`, but cannot detect MAC policies (AppArmor, SELinux) that permit `open()` but deny `write()`.
+
+**L7 inside-out:** The probe can only detect observability infrastructure visible from inside the sandbox. External monitoring (Falco on host, cloud audit logs) is invisible to the probe.
+
+**Threat scores are mechanical:** Derived from layer scores using the AST threshold rules. If a layer score is wrong, threat scores will be wrong too.
+
+### Interpreting Results
+
+The probe produces **verified** evidence level scores — the highest confidence tier in the taxonomy. When a probe score disagrees with a documentation-based score in `products.yaml`, the probe score should be preferred (assuming the probe was run in the product's intended configuration).
+
+Key patterns to look for:
+- **L1:0 in a VM** → VM detection failed. Check `L1.tests` for `vm_detection` results.
+- **L5:-1** → No credentials to test. This is common in clean containers. Not a security finding.
+- **L6 high score in a writable container** → The probe tests protected system paths. If the container runs as non-root with a read-only root filesystem, most L6 tests will be blocked even without explicit governance.
+- **L4:1 with proxy env vars** → Cooperative enforcement. The probe verified that raw TCP bypasses the proxy — this is correct S:1 scoring.
+
+---
+
 ## Quick Reference Card
 
 ```

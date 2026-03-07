@@ -1,0 +1,103 @@
+name: Release ast-probe
+
+on:
+  push:
+    tags:
+      - 'probe/v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            suffix: linux-amd64
+          - goos: linux
+            goarch: arm64
+            suffix: linux-arm64
+          - goos: darwin
+            goarch: amd64
+            suffix: darwin-amd64
+          - goos: darwin
+            goarch: arm64
+            suffix: darwin-arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache-dependency-path: probe/go.sum
+
+      - name: Build
+        working-directory: probe
+        env:
+          CGO_ENABLED: '0'
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#probe/}"
+          go build -ldflags "-s -w -X main.version=${VERSION}" \
+            -o ast-probe-${{ matrix.suffix }} .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ast-probe-${{ matrix.suffix }}
+          path: probe/ast-probe-${{ matrix.suffix }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Generate checksums
+        run: |
+          cd artifacts
+          sha256sum ast-probe-* > checksums.txt
+          cat checksums.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "ast-probe ${{ github.ref_name }}"
+          body: |
+            ## ast-probe ${{ github.ref_name }}
+
+            Drop this binary into any sandbox and run it. It probes all 7 AST defense layers from the inside, producing a machine-readable JSON score card.
+
+            ### Quick Start
+            ```bash
+            # Download for your platform
+            curl -LO https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ast-probe-linux-amd64
+            chmod +x ast-probe-linux-amd64
+
+            # Run inside a sandbox
+            ./ast-probe-linux-amd64 --product "my-sandbox" --out report.json
+            ```
+
+            ### Binaries
+            | File | Platform |
+            |------|----------|
+            | `ast-probe-linux-amd64` | Linux x86_64 |
+            | `ast-probe-linux-arm64` | Linux ARM64 (Graviton, Apple Silicon VMs) |
+            | `ast-probe-darwin-amd64` | macOS Intel |
+            | `ast-probe-darwin-arm64` | macOS Apple Silicon |
+
+            All binaries are statically linked (`CGO_ENABLED=0`), zero dependencies.
+
+            See `checksums.txt` for SHA-256 verification.
+          files: |
+            artifacts/ast-probe-*
+            artifacts/checksums.txt
+          fail_on_unmatched_files: true

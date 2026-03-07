@@ -4,3 +4,7 @@
 # Python
 .venv/
 __pycache__/
+
+# Probe binaries
+probe/ast-probe
+probe/ast-probe-*

@@ -553,6 +553,19 @@ The Agent Sandbox Taxonomy provides a shared vocabulary — **7 defense layers**
 
 The [Taxonomy (Parts 1–5)](#the-taxonomy) and [Framework (Parts 6–8)](#the-framework) should remain stable. [Appendices (A–C)](#appendix-a-layer-mechanism-reference) are updated as products evolve — edit [`products.yaml`](products.yaml) and run `uv run python scripts/generate.py` to regenerate the visuals.
 
+### ast-probe: Automated Verification
+
+The repo includes [`ast-probe`](probe/), a portable Go binary that probes all 7 defense layers from inside any sandbox. Drop it in, run it, get a verified JSON score card instead of documentation-based guesses. Download pre-built binaries from [Releases](https://github.com/kajogo777/the-agent-sandbox-taxonomy/releases) or build from source:
+
+```bash
+# Download and run inside any sandbox
+curl -LO https://github.com/kajogo777/the-agent-sandbox-taxonomy/releases/latest/download/ast-probe-linux-amd64
+chmod +x ast-probe-linux-amd64
+./ast-probe-linux-amd64 --product "my-sandbox" --out report.json
+```
+
+See [`probe/README.md`](probe/README.md) for full documentation, safety guarantees, and known quirks.
+
 ---
 
 *Feedback welcome.*
