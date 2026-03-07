@@ -434,6 +434,7 @@ def generate_threat_coverage(products):
 
 def main():
     products = load_products()
+    products.sort(key=lambda p: p["name"].lower())
 
     # Compute threat coverage mechanically from layer scores
     for p in products:
