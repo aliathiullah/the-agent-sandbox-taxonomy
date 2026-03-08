@@ -192,10 +192,14 @@
 <circle cx="305.0" cy="349.0" r="8" fill="#059669"/>
 <circle cx="365.0" cy="347.0" r="6" fill="#059669"/>
 <text x="365.0" y="361.0" fill="#6b7280" font-size="7" text-anchor="middle">L</text>
-<circle cx="387.0" cy="347.0" r="6" fill="#059669"/>
+<circle cx="387.0" cy="347.0" r="6" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<path d="M 387.0,341.0 A 6,6 0 0,0 387.0,353.0 Z" fill="#d97706"/>
+<circle cx="387.0" cy="347.0" r="6" fill="none" stroke="#d97706" stroke-width="1.5"/>
 <text x="387.0" y="361.0" fill="#6b7280" font-size="7" text-anchor="middle">R</text>
 <circle cx="447.0" cy="349.0" r="8" fill="#059669"/>
-<circle cx="518.0" cy="349.0" r="8" fill="#059669"/>
+<circle cx="518.0" cy="349.0" r="8" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<path d="M 518.0,341.0 A 8,8 0 0,0 518.0,357.0 Z" fill="#d97706"/>
+<circle cx="518.0" cy="349.0" r="8" fill="none" stroke="#d97706" stroke-width="1.5"/>
 <circle cx="589.0" cy="349.0" r="8" fill="#059669"/>
 <circle cx="660.0" cy="349.0" r="8" fill="#059669"/>
 <text x="737.0" y="350.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>
@@ -374,10 +378,14 @@
 <circle cx="305.0" cy="659.0" r="8" fill="#059669"/>
 <circle cx="365.0" cy="657.0" r="6" fill="#059669"/>
 <text x="365.0" y="671.0" fill="#6b7280" font-size="7" text-anchor="middle">L</text>
-<circle cx="387.0" cy="657.0" r="6" fill="#059669"/>
+<circle cx="387.0" cy="657.0" r="6" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<path d="M 387.0,651.0 A 6,6 0 0,0 387.0,663.0 Z" fill="#d97706"/>
+<circle cx="387.0" cy="657.0" r="6" fill="none" stroke="#d97706" stroke-width="1.5"/>
 <text x="387.0" y="671.0" fill="#6b7280" font-size="7" text-anchor="middle">R</text>
 <circle cx="447.0" cy="659.0" r="8" fill="#059669"/>
-<circle cx="518.0" cy="659.0" r="8" fill="#059669"/>
+<circle cx="518.0" cy="659.0" r="8" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+<path d="M 518.0,651.0 A 8,8 0 0,0 518.0,667.0 Z" fill="#d97706"/>
+<circle cx="518.0" cy="659.0" r="8" fill="none" stroke="#d97706" stroke-width="1.5"/>
 <circle cx="589.0" cy="659.0" r="8" fill="#059669"/>
 <circle cx="660.0" cy="659.0" r="8" fill="#059669"/>
 <text x="737.0" y="660.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>

@@ -541,7 +541,7 @@ Threat coverage is **computed mechanically** from layer scores by `scripts/gener
   <img src="assets/threat-coverage.svg" alt="AST Threat Coverage Matrix" width="540"/>
 </p>
 
-**Patterns**: Every product with L1 >= 2 and L3 >= 2 achieves T3-Local ●. T3-Remote is the sharpest differentiator — only products with both L4 >= 2 and L6 >= 2 achieve ●. Six products achieve all-● coverage: Google Agent Sandbox, Copilot coding agent, Replit, Deno Sandbox, Deno Deploy, and Ona — all have S >= 2 across every primary defense layer. No product scores T7:○ because every product has L1 >= 2.
+**Patterns**: Every product with L1 >= 2 and L3 >= 2 achieves T3-Local ●. T3-Remote is the sharpest differentiator — only products with both L4 >= 2 and L6 >= 2 achieve ●. Four products achieve all-● coverage: Google Agent Sandbox, Copilot coding agent, Deno Deploy, and Ona — all have S >= 2 across every primary defense layer. L6 is the most commonly unaddressed layer: most products either lack runtime action governance entirely or rely on HITL (which is not sandbox enforcement).
 
 ### Composition Examples
 

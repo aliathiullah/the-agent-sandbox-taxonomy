@@ -171,9 +171,11 @@ products:
       note: Env vars via blaxel.toml + platform secrets syntax; blog recommends hypervisor-injected secrets but unclear if
         implemented
     L6:
-      s: 1
-      g: 1
-      note: Deployment policies and model gateway with token cost control; not runtime command-level governance
+      s: null
+      g: null
+      note: Deployment policies and model gateway with token cost control; not runtime command-level governance.
+        Scored — (not addressed) because deployment-time policies are not runtime action governance — the sandbox
+        itself does not restrict what the agent does at runtime
     L7:
       s: 2
       g: 2
@@ -766,14 +768,17 @@ products:
       note: AES-256 encryption at rest; env var injection for secrets; secret scanner; SOC 2 Type 2; secrets visible inside
         container
     L6:
-      s: 3
-      g: 1
-      note: Seccomp profile with ~44 blocked syscalls; capabilities dropped; runs as non-root runner user; kernel-enforced
+      s: null
+      g: null
+      note: Seccomp profile with ~44 blocked syscalls; capabilities dropped; runs as non-root runner user. Scored —
+        (not addressed) because seccomp/capability enforcement is L1 (compute isolation), not L6 (action governance).
+        No runtime policy engine governs what the agent does with the access it has
     L7:
       s: 2
       g: 1
       note: Console logs; resource monitor; enterprise audit logging; no OTel or Logpush integration
-  notes: 'All layers at S:2+. Persistent filesystem means T5 relies on L1+L3+L6 (all met). L4 permissive egress is weakest
+  notes: 'L6 now — (seccomp/capabilities are L1, not L6). Persistent filesystem means T5 relies on L1+L3+L6 — with L6
+    now unaddressed, T5 drops to partial. L4 permissive egress is weakest
     link — rate-limited but no allowlist. Complements: Egress allowlist for L4 upgrade'
   last_reviewed: null
   evidence_level: docs
@@ -804,15 +809,17 @@ products:
       note: Credential proxying — placeholder injected in env, real value substituted on-wire only; secrets never fully present
         in sandbox
     L6:
-      s: 3
-      g: 1
-      note: Firecracker minimal VMM; seccomp on host process; no dedicated policy engine; kernel-enforced at VMM level
+      s: null
+      g: null
+      note: Firecracker minimal VMM; seccomp on host process; no dedicated policy engine. Scored — (not addressed)
+        because the VMM/seccomp enforcement is L1 (compute isolation), not L6 (action governance). No runtime policy
+        engine governs what the agent does with the access it has
     L7:
       s: 2
       g: 2
       note: Deploy OTel inherited; SDK lifecycle events; no dedicated audit logs
-  notes: 'Strongest isolation tier (Firecracker). Ephemeral VMs inherently address T5. L5 credential proxying is best-in-class.
-    Complements: Dedicated audit logging for L7 upgrade'
+  notes: 'Strongest isolation tier (Firecracker). L6 now — (VMM/seccomp is L1, not L6). L5 credential proxying is best-in-class.
+    Complements: Runtime action governance (policy engine), dedicated audit logging for L7 upgrade'
   last_reviewed: null
   evidence_level: docs
 - name: Deno Deploy
