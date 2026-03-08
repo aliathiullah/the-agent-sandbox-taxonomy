@@ -142,17 +142,18 @@ def compute_threats(product):
     """Mechanically derive threat coverage from layer scores using AST threshold rules.
 
     Returns a dict with T1–T7 keys and values "full", "partial", or "none",
-    plus a "T3_detail" key with the L/R breakdown string.
+    plus "T3_detail" with the L/R breakdown string, and "T3_local"/"T3_remote"
+    with individual ratings.
 
-    Rules (from SKILL.md / README.md):
+    Rules (from SKILL.md / README.md — each threat has its own thresholds):
       T1 (Exfiltration):  primary L3, L4, L5 — all >= 2 → ●; any → ◐; none → ○
       T2 (Supply Chain):  primary L3, L4, L7 — all >= 2 → ●; any → ◐; none → ○
       T3-Local:           primary L1, L3     — both >= 2 → ●; one → ◐; none → ○
       T3-Remote:          primary L4, L6     — both >= 2 → ●; one → ◐; none → ○
       T3 combined:        lower of T3-L and T3-R
       T4 (Lateral):       primary L4, L1     — both >= 2 → ●; one → ◐; none → ○
-      T5 (Persistence):   ephemeral (L1 >= 4) → ●; OR all of L1, L3, L6 >= 2 → ●;
-                          any >= 2 → ◐; none → ○
+      T5 (Persistence):   primary L1, L3, L6 — all >= 2 → ●; any → ◐; none → ○
+                          (no ephemeral shortcut — writable mounts can survive any L1)
       T6 (Priv Esc):      L1 >= 3 AND L2 >= 2 → ●; any of L1 >= 2, L2 >= 2 → ◐; none → ○
       T7 (DoS):           primary L2, L1     — both >= 2 → ●; any → ◐; none → ○
     """
@@ -187,17 +188,15 @@ def compute_threats(product):
     _reverse = {2: "full", 1: "partial", 0: "none"}
     _sym = {"full": "●", "partial": "◐", "none": "○"}
     threats["T3"] = _reverse[min(_order[t3_local], _order[t3_remote])]
+    threats["T3_local"] = t3_local
+    threats["T3_remote"] = t3_remote
     threats["T3_detail"] = f"L{_sym[t3_local]}/R{_sym[t3_remote]}"
 
     # T4 — Lateral Movement
     threats["T4"] = _rate([L4 >= 2, L1 >= 2])
 
-    # T5 — Persistence (ephemeral shortcut: L1 >= 4 → ●)
-    is_ephemeral = L1 >= 4
-    if is_ephemeral:
-        threats["T5"] = "full"
-    else:
-        threats["T5"] = _rate([L1 >= 2, L3 >= 2, L6 >= 2])
+    # T5 — Persistence (no ephemeral shortcut — writable mounts can survive any L1)
+    threats["T5"] = _rate([L1 >= 2, L3 >= 2, L6 >= 2])
 
     # T6 — Privilege Escalation (stricter: L1 >= 3 AND L2 >= 2 for ●)
     if L1 >= 3 and L2 >= 2:
@@ -353,8 +352,9 @@ def generate_threat_coverage(products):
     review_col_w = 100
     header_h = 56
     row_gap = 3
-    legend_h = 50
+    legend_h = 70
     indicator_r = 8
+    t3_indicator_r = 6  # smaller circles for T3 L/R split
 
     total_rows = len(products)
     total_h = header_h + total_rows * (cell_h + row_gap) + legend_h + 20
@@ -379,7 +379,11 @@ def generate_threat_coverage(products):
     for i, threat in enumerate(THREATS):
         x = name_col_w + i * (cell_w + row_gap) + cell_w / 2
         lines.append(f'<text x="{x}" y="{header_h - 20}" fill="{MUTED_COLOR}" font-size="9" text-anchor="middle">{threat_names[threat]}</text>')
-        lines.append(f'<text x="{x}" y="{header_h - 6}" fill="{ACCENT_COLOR}" font-size="10" font-weight="700" text-anchor="middle">{threat}</text>')
+        if threat == "T3":
+            # T3 header: show L/R sub-labels
+            lines.append(f'<text x="{x}" y="{header_h - 6}" fill="{ACCENT_COLOR}" font-size="10" font-weight="700" text-anchor="middle">{threat}</text>')
+        else:
+            lines.append(f'<text x="{x}" y="{header_h - 6}" fill="{ACCENT_COLOR}" font-size="10" font-weight="700" text-anchor="middle">{threat}</text>')
 
     # column header — evidence level
     evidence_x = name_col_w + len(THREATS) * (cell_w + row_gap) + evidence_col_w / 2
@@ -396,12 +400,24 @@ def generate_threat_coverage(products):
         lines.append(f'<text x="14" y="{y + cell_h/2 + 4}" fill="{TEXT_COLOR}" font-size="10" font-weight="500">{name}</text>')
 
         for i, threat in enumerate(THREATS):
-            level = get_threat_level(p, threat)
             x = name_col_w + i * (cell_w + row_gap)
             cx = x + cell_w / 2
             cy = y + cell_h / 2
 
-            lines.extend(_threat_shape(level, cx, cy, indicator_r))
+            if threat == "T3":
+                # T3: render two smaller circles for Local and Remote
+                t3_local = get_threat_level(p, "T3_local")
+                t3_remote = get_threat_level(p, "T3_remote")
+                gap = 11  # horizontal offset from center
+                # Left circle (Local)
+                lines.extend(_threat_shape(t3_local, cx - gap, cy - 2, t3_indicator_r))
+                lines.append(f'<text x="{cx - gap}" y="{cy + t3_indicator_r + 6}" fill="{MUTED_COLOR}" font-size="7" text-anchor="middle">L</text>')
+                # Right circle (Remote)
+                lines.extend(_threat_shape(t3_remote, cx + gap, cy - 2, t3_indicator_r))
+                lines.append(f'<text x="{cx + gap}" y="{cy + t3_indicator_r + 6}" fill="{MUTED_COLOR}" font-size="7" text-anchor="middle">R</text>')
+            else:
+                level = get_threat_level(p, threat)
+                lines.extend(_threat_shape(level, cx, cy, indicator_r))
 
         # evidence level — color-coded text
         evidence_label = escape_xml(get_evidence_label(p))
@@ -425,6 +441,10 @@ def generate_threat_coverage(products):
         lines.extend(_threat_shape(level, lx + 7, legend_y - 4, 6))
         lines.append(f'<text x="{lx + 19}" y="{legend_y}" fill="{MUTED_COLOR}" font-size="9">{escape_xml(text)}</text>')
         lx += len(text) * 6 + 36
+
+    # T3 footnote annotation
+    footnote_y = legend_y + 18
+    lines.append(f'<text x="10" y="{footnote_y}" fill="{MUTED_COLOR}" font-size="8">T3: L = Local (L1+L3) · R = Remote (L4+L6) — combined T3 rating uses the lower of the two</text>')
 
     lines.append("</svg>")
     return "\n".join(lines)

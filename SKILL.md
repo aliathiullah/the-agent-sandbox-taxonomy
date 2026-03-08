@@ -97,9 +97,9 @@ Use this when scoring. For each threat, identify which layers provide defense an
 |---|---|---|
 | **T1 Exfiltration** | L3 + L4 + L5 | L3 blocks reading secrets, L4 blocks sending them out, L5 ensures they're not present. Any single layer alone leaks. |
 | **T2 Supply Chain** | L3 + L4 + L7 | L4 controls download sources, L3 protects filesystem integrity, L7 detects compromises after the fact. |
-| **T3 Destructive Ops** | L3 + **L4** + L6 | L3 covers local destruction. **Remote destruction is a network operation**: needs L4 to block access or L6 to block the action semantically. L1 alone does NOT protect remote resources. |
+| **T3 Destructive Ops** | L1 + L3 (local) / L4 + L6 (remote) | L1+L3 covers local destruction. **Remote destruction is a network operation**: needs L4 to block access AND L6 to block the action semantically. L1 alone does NOT protect remote resources. |
 | **T4 Lateral Movement** | L4 + L1 | L4 blocks outbound access. L1 provides network namespace isolation as secondary. |
-| **T5 Persistence** | L3 + L1 + L6 | Sandboxes with structural isolation (L1 >= 4: microVMs, unikernels) inherently prevent persistence — the agent process and its side-effects cannot survive sandbox destruction regardless of whether user data volumes persist. Sandboxes with weaker isolation (L1 < 4) need L3 to block init file writes and L6 to block scheduled task creation. |
+| **T5 Persistence** | L1 + L3 + L6 | Structural compute isolation (L1 >= 4) eliminates process-level persistence but does NOT eliminate file-level persistence through writable volume mounts (git hooks, CI configs, shell init files written to mounted project dirs survive sandbox destruction). Full T5 coverage requires L1 (isolation boundary), L3 (controlling what paths are writable), and L6 (blocking persistence-creating actions like cron jobs and git hooks). |
 | **T6 Privilege Escalation** | L1 + L2 | L1 strength directly determines escape resistance. Hardware boundaries are fundamentally harder to escape than software. |
 | **T7 Denial of Service** | L2 + L1 | L2 caps resources. Enforcement must be outside the sandbox. |
 
@@ -259,9 +259,9 @@ Use these tables to determine the correct S and G scores for each mechanism you 
 | Mechanism | S | G | How It Works |
 |---|---|---|---|
 | No governance | 0 | 0 | Agent can do anything it has access to |
-| Human-in-the-loop | 1 | 1 | Agent proposes; human approves |
-| Command blocklist | 2 | 2 | Known-dangerous commands blocked |
-| Policy engine (Cedar/OPA) | 2 | 3 | Fine-grained rules per action/resource/context |
+| Human-in-the-loop | — | — | Agent proposes, human approves. The sandbox delegates the governance decision to an external actor rather than enforcing it. Since the sandbox itself provides no enforcement at this layer, HITL is scored `—` (not addressed). HITL is valuable but it is the human providing governance, not the sandbox |
+| Command blocklist | 1 | 2 | Known-dangerous commands blocked by pattern matching. **S:1 because agents can trivially bypass by using libraries, scripts, aliases, or alternative tools to perform the same action** — the blocklist only works if the agent uses the exact syntax being blocked, making this cooperative enforcement |
+| Policy engine (Cedar/OPA) | 2 | 3 | Fine-grained rules per structured action/resource/context. Agent cannot rephrase a `delete namespace` into something the policy doesn't recognize — the action is evaluated semantically, not syntactically |
 | Declarative-only mode | 3 | 3 | Agent produces declarations only; cannot execute directly |
 
 ### L7 — Observability & Audit Mechanisms
@@ -371,7 +371,7 @@ For each layer:
 
 Threat coverage is **computed mechanically** from layer scores — it is derived data, not manually authored. The `scripts/generate.py` script computes threats at generation time using the threshold rules below. When scoring a new product, you only need to provide layer scores; threats are derived automatically.
 
-Apply the threshold rules below **mechanically** for each threat. Do not eyeball — use the layer scores from Step 2 and the rules to determine the symbol. Treat `~` (not addressed) as 0 for threshold comparisons.
+Apply the threshold rules below **mechanically** for each threat. Do not eyeball — use the layer scores from Step 2 and the rules to determine the symbol. Each threat has its own primary defense layers and thresholds — there is no single universal rule. Treat `~` (not addressed) as 0 for threshold comparisons.
 
 | Rating | Symbol | Meaning |
 |---|---|---|
@@ -404,9 +404,10 @@ For each threat, the **primary defense layers** and their **thresholds** are lis
 - ○ if **neither** meets the threshold
 
 **T5 — Persistence** (primary: L1, L3, L6)
-- ● if **L1 >= 4** (structural isolation — microVM/unikernel boundary means the agent process cannot survive sandbox destruction, regardless of whether user data volumes persist), OR if **all three** of L1 >= 2, L3 >= 2, L6 >= 2
+- ● if **all three** of L1 >= 2, L3 >= 2, L6 >= 2
 - ◐ if **at least one** of L1 >= 2, L3 >= 2, L6 >= 2
 - ○ if **none** meet the threshold
+- Note: Structural compute isolation (L1 >= 4) eliminates process-level persistence but does NOT eliminate file-level persistence through writable volume mounts. Full T5 coverage requires L3 (controlling what paths are writable) and L6 (blocking persistence-creating actions) in addition to L1.
 
 **T6 — Privilege Escalation** (primary: L1, L2)
 - ● if **both** L1 >= 3 AND L2 >= 2 (kernel/hardware isolation + external resource caps)
@@ -529,15 +530,15 @@ Walk the user through these 8 questions in order. Each answer maps to layer requ
 
 **5. Can you tolerate human-in-the-loop?**
 - No (autonomous agents) → need **L6 S:2+** (policy engine)
-- Yes → L6 S:1 (human approval) is acceptable
+- Yes → HITL adds a governance layer, but it is not scored as sandbox enforcement (the human provides governance, not the sandbox). Evaluate what the sandbox itself enforces at L6 independently
 
 **6. Do you need audit trails?**
 - Compliance or team use → **L7 S:2+** with structured logs
 - Regulatory → consider cryptographic audit chains
 
 **7. Ephemeral or persistent sandbox?**
-- Structural isolation (L1 >= 4: microVM/unikernel) → inherently addresses T5 because the agent process cannot survive sandbox destruction (user data volumes persisting is not T5)
-- Weaker isolation (L1 < 4) → must explicitly address T5 via L3 (block init file writes) and L6 (block scheduled task creation)
+- Structural isolation (L1 >= 4: microVM/unikernel) → eliminates process-level persistence, but file-level persistence through writable volume mounts (git hooks, CI configs, shell init files) is NOT eliminated by L1 alone. Full T5 coverage requires **L3** (controlling what paths are writable) and **L6** (blocking persistence-creating actions) in addition to L1
+- Weaker isolation (L1 < 4) → must explicitly address T5 via L3 and L6
 
 **8. What are your portability constraints?**
 - No infrastructure → process wrappers (no infra tag needed)

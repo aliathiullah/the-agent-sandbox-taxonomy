@@ -188,7 +188,7 @@ Threats don't respect layer boundaries. A single destructive operation might inv
 | **T2 Supply Chain** | L3 + L4 + L7 | L4 controls download sources, L3 protects filesystem integrity (prevents binary replacement), L7 detects compromises after the fact. |
 | **T3 Destructive Ops** | L1 + L3 (local) / L4 + L6 (remote) | L1+L3 covers local destruction. **Remote destruction is a network operation**: needs L4 to block access AND L6 to block the action semantically. L1 alone doesn't protect remote resources. |
 | **T4 Lateral Movement** | L4 + L1 | L4 blocks outbound access. L1 provides network namespace isolation as secondary boundary. |
-| **T5 Persistence** | L1 + L3 + L6 | Sandboxes with structural isolation (L1 >= 4: microVMs, unikernels) inherently prevent persistence — the agent process and its side-effects cannot survive sandbox destruction regardless of whether user data volumes persist. Sandboxes with weaker isolation (L1 < 4) need L3 to block init file writes and L6 to block scheduled task creation. |
+| **T5 Persistence** | L1 + L3 + L6 | Structural compute isolation (L1 >= 4) eliminates process-level persistence but does NOT eliminate file-level persistence through writable volume mounts (git hooks, CI configs, shell init files written to mounted project dirs survive sandbox destruction). Full T5 coverage requires L1 (isolation boundary), L3 (controlling what paths are writable), and L6 (blocking persistence-creating actions like cron jobs and git hooks). |
 | **T6 Privilege Escalation** | L1 + L2 | L1 strength directly determines escape resistance. Hardware boundaries are fundamentally harder to escape than software boundaries. |
 | **T7 Denial of Service** | L2 + L1 | L2 caps resources. Enforcement must be outside the sandbox (cgroups, hypervisor allocation). |
 
@@ -196,24 +196,48 @@ Threats don't respect layer boundaries. A single destructive operation might inv
 
 ### Threat Assessment Rules
 
-Threat coverage is assessed **mechanically** from layer scores, not by intuition. For each threat, the primary defense layers have a **threshold of S >= 2** (software-enforced or stronger). The rating is determined by how many primary layers meet the threshold:
+Threat coverage is assessed **mechanically** from layer scores, not by intuition. Each threat has its own primary defense layers and thresholds — there is no single universal rule. The rating symbols:
 
-- **●** (Addressed): **All** primary layers meet the threshold
-- **◐** (Partial): **At least one** primary layer meets the threshold, but not all
-- **○** (Not addressed): **No** primary layer meets the threshold
+- **●** (Addressed): The threat is actively defended — all required conditions are met
+- **◐** (Partial): Some defense exists but gaps remain
+- **○** (Not addressed): No primary defense layer meets its threshold — the threat is unmitigated
 
-| Threat | Primary Layers | ● (all meet threshold) | ◐ (some meet) | ○ (none meet) |
-|---|---|---|---|---|
-| **T1** | L3, L4, L5 | All three >= 2 | At least one >= 2 | None >= 2 |
-| **T2** | L3, L4, L7 | All three >= 2 | At least one >= 2 | None >= 2 |
-| **T3-L** | L1, L3 | Both >= 2 | One >= 2 | Neither >= 2 |
-| **T3-R** | L4, L6 | Both >= 2 | One >= 2 | Neither >= 2 |
-| **T4** | L4, L1 | Both >= 2 | One >= 2 | Neither >= 2 |
-| **T5** | L1, L3, L6 | L1 >= 4 (structural isolation), or all three >= 2 | At least one >= 2 | None >= 2 |
-| **T6** | L1, L2 | L1 >= 3 AND L2 >= 2 | At least one >= 2 | Neither >= 2 |
-| **T7** | L2, L1 | Both >= 2 | At least one >= 2 | Neither >= 2 |
+**T1 — Data Exfiltration** (primary: L3, L4, L5)
+- ● if **all three** of L3 >= 2, L4 >= 2, L5 >= 2
+- ◐ if **at least one** >= 2
+- ○ if **none** >= 2
 
-T3 is always split into local (T3-L) and remote (T3-R). The combined T3 rating uses the lower of the two. Notation: `L●/R○`, `L●/R◐`, `full L+R` (both ●).
+**T2 — Supply Chain Compromise** (primary: L3, L4, L7)
+- ● if **all three** of L3 >= 2, L4 >= 2, L7 >= 2
+- ◐ if **at least one** >= 2
+- ○ if **none** >= 2
+
+**T3 — Destructive Operations** (split local/remote, then combine)
+- **T3-Local** (primary: L1, L3): ● if **both** >= 2; ◐ if **one**; ○ if **neither**
+- **T3-Remote** (primary: L4, L6): ● if **both** >= 2; ◐ if **one**; ○ if **neither**
+- Combined T3 = the lower of T3-L and T3-R
+- Notation: `L●/R○`, `L●/R◐`, `L+R` (both ●)
+
+**T4 — Lateral Movement** (primary: L4, L1)
+- ● if **both** L4 >= 2 AND L1 >= 2
+- ◐ if **one** >= 2
+- ○ if **neither** >= 2
+
+**T5 — Persistence** (primary: L1, L3, L6)
+- ● if **all three** of L1 >= 2, L3 >= 2, L6 >= 2
+- ◐ if **at least one** >= 2
+- ○ if **none** >= 2
+- Note: Structural compute isolation (L1 >= 4) eliminates process-level persistence but does NOT eliminate file-level persistence through writable volume mounts. Full T5 coverage requires L3 (controlling what paths are writable) and L6 (blocking persistence-creating actions) in addition to L1.
+
+**T6 — Privilege Escalation** (primary: L1, L2)
+- ● if L1 >= 3 AND L2 >= 2 (kernel/hardware isolation + external resource caps)
+- ◐ if **at least one** of L1 >= 2, L2 >= 2
+- ○ if **neither** >= 2
+
+**T7 — Denial of Service** (primary: L2, L1)
+- ● if **both** L2 >= 2 AND L1 >= 2
+- ◐ if **at least one** >= 2
+- ○ if **neither** >= 2
 
 Treat `~` (layer not addressed) as 0 for threshold comparisons.
 
@@ -383,13 +407,13 @@ If no, disable it (L4 S:4). This eliminates T1 and T4 in one step. If yes, use a
 Ideally credentials are never present (L5 S:4 via proxy or ephemeral tokens). Never pass raw credentials if avoidable.
 
 **5. Can you tolerate human-in-the-loop?**
-If no (autonomous agents), you need L6 S:2+ (policy engine). This is where behavioral governance tools become essential.
+If no (autonomous agents), you need L6 S:2+ (policy engine). Note: HITL is not scored as sandbox enforcement (the human provides governance, not the sandbox), so even with HITL you should evaluate what the sandbox itself enforces at L6.
 
 **6. Do you need audit trails?**
 For compliance or team use, L7 S:2+ with structured logs. Consider cryptographic audit chains for regulatory requirements.
 
 **7. Ephemeral or persistent sandbox?**
-Structural isolation (L1 >= 4: microVM/unikernel) inherently addresses T5 — the agent process cannot survive sandbox destruction regardless of whether user data volumes persist. Weaker isolation (L1 < 4) must explicitly address T5 via L3 (block init file writes) and L6 (block scheduled task creation).
+Structural isolation (L1 >= 4: microVM/unikernel) eliminates process-level persistence — the agent process cannot survive sandbox destruction. However, file-level persistence through writable volume mounts (git hooks, CI configs, shell init files) is NOT eliminated by L1 alone. Full T5 coverage requires L3 (controlling what paths are writable) and L6 (blocking persistence-creating actions) in addition to L1. Weaker isolation (L1 < 4) must explicitly address T5 via L3 and L6.
 
 **8. What are your portability constraints?**
 No infrastructure → process wrappers (no infra tag needed). Docker available → container wrappers, sidecars (`docker`). Cloud/K8s → full platform range (`cloud`, `k8s`).
@@ -469,9 +493,9 @@ Catalogs mechanisms at each layer with strength and granularity. Products listed
 | Mechanism | S | G | How It Works |
 |---|---|---|---|
 | No governance | 0 | 0 | Agent can do anything it has access to |
-| Human-in-the-loop | 1 | 1 | Agent proposes; human approves |
-| Command blocklist | 2 | 2 | Known-dangerous commands blocked |
-| Policy engine (Cedar/OPA) | 2 | 3 | Fine-grained rules per action/resource/context |
+| Human-in-the-loop | — | — | Agent proposes, human approves. The sandbox delegates the governance decision to an external actor rather than enforcing it. Since the sandbox itself provides no enforcement at this layer, HITL is scored `—` (not addressed). HITL is valuable but it is the human providing governance, not the sandbox |
+| Command blocklist | 1 | 2 | Known-dangerous commands blocked by pattern matching. **S:1 because agents can trivially bypass by using libraries, scripts, aliases, or alternative tools to perform the same action** — the blocklist only works if the agent uses the exact syntax being blocked, making this cooperative enforcement |
+| Policy engine (Cedar/OPA) | 2 | 3 | Fine-grained rules per structured action/resource/context. Agent cannot rephrase a `delete namespace` into something the policy doesn't recognize — the action is evaluated semantically, not syntactically |
 | Declarative-only mode | 3 | 3 | Agent produces declarations only; cannot execute directly |
 
 ## A.7 — L7 Observability
@@ -511,13 +535,13 @@ For full per-product details (granularity scores, mechanism notes, gaps, and com
 
 # APPENDIX C: Threat Coverage Matrix
 
-Threat coverage is **computed mechanically** from layer scores by `scripts/generate.py` using the [threshold rules](#threat-assessment-rules) in Section 3 — it is not hand-authored. **●** Addressed — all primary defense layers meet S >= 2. **◐** Partial — at least one primary layer meets the threshold but not all. **○** Not addressed — no primary layer meets the threshold. T3 is split into local (L1+L3) and remote (L4+L6): `L●/R○` = local mitigated/remote not; `full L+R` = both.
+Threat coverage is **computed mechanically** from layer scores by `scripts/generate.py` using the [threshold rules](#threat-assessment-rules) in Section 3 — it is not hand-authored. **●** Addressed — all required conditions for the threat are met. **◐** Partial — some defense exists but gaps remain. **○** Not addressed — no primary layer meets its threshold. T3 is split into local (L1+L3) and remote (L4+L6): `L●/R○` = local mitigated/remote not; `L+R` = both.
 
 <p align="center">
   <img src="assets/threat-coverage.svg" alt="AST Threat Coverage Matrix" width="540"/>
 </p>
 
-**Patterns**: Every product with L1 >= 2 and L3 >= 2 achieves T3-Local ●. T3-Remote is the sharpest differentiator — only products with both L4 >= 2 and L6 >= 2 achieve ●. Seven products achieve all-● coverage: Google Agent Sandbox, Claude Code (web), Copilot coding agent, Replit, Deno Sandbox, Deno Deploy, and Ona — all have S >= 2 across every primary defense layer. No product scores T7:○ because every product has L1 >= 2.
+**Patterns**: Every product with L1 >= 2 and L3 >= 2 achieves T3-Local ●. T3-Remote is the sharpest differentiator — only products with both L4 >= 2 and L6 >= 2 achieve ●. Six products achieve all-● coverage: Google Agent Sandbox, Copilot coding agent, Replit, Deno Sandbox, Deno Deploy, and Ona — all have S >= 2 across every primary defense layer. No product scores T7:○ because every product has L1 >= 2.
 
 ### Composition Examples
 

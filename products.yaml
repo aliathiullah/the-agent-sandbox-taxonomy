@@ -506,10 +506,11 @@ products:
       note: 'Protected indirectly: filesystem denies on ~/.ssh, ~/.aws; network proxy prevents exfiltration; but env vars
         in shell session are visible; no vault or credential proxy'
     L6:
-      s: 2
+      s: 1
       g: 3
-      note: 5 permission modes (Normal → Bypass); two sandbox modes; command blocklist (curl, wget); PreToolUse hooks for
-        programmatic approval/denial; enterprise managed settings
+      note: 5 permission modes (Normal → Bypass); two sandbox modes; command blocklist (curl, wget) — S:1 because blocklist
+        is bypassable via libraries/scripts/aliases; PreToolUse hooks for programmatic approval/denial add G:3 but hooks
+        only govern tool calls within the Claude framework, not arbitrary shell execution; enterprise managed settings
     L7:
       s: 2
       g: 2
@@ -547,10 +548,11 @@ products:
       note: Credentials NEVER placed inside sandbox VM; git auth via scoped-credential proxy that translates to real GitHub
         tokens outside sandbox; branch restrictions enforced by proxy
     L6:
-      s: 2
-      g: 1
-      note: 'PR-as-checkpoint: human reviews diffs before merge; agent cannot approve own PRs; sessions can be teleported
-        to local terminal; GitHub-only'
+      s: null
+      g: null
+      note: 'PR-as-checkpoint: human reviews diffs before merge; agent cannot approve own PRs. Scored — (not addressed)
+        because the sandbox itself provides no L6 enforcement — the human provides governance, not the sandbox. Agent is
+        autonomous within the session (runs --dangerously-skip-permissions)'
     L7:
       s: 2
       g: 2
@@ -590,10 +592,12 @@ products:
       note: 'shell_environment_policy: automatic KEY/SECRET/TOKEN pattern filtering; inherit=none or core options; explicit
         exclude patterns; LD_* stripping; in Codex Cloud: secrets removed before agent phase'
     L6:
-      s: 2
-      g: 3
+      s: null
+      g: null
       note: '4 approval policies: untrusted, on-request, never (CI mode), reject; separate execpolicy rule files; --full-auto
-        shortcut; untrusted projects skip project-scoped config'
+        shortcut. Scored — (not addressed) because all L6 mechanisms are HITL gates — the sandbox delegates governance to
+        the human. With --ask-for-approval never, no L6 enforcement remains. The sandbox (Landlock/Seatbelt) is L1/L3/L4,
+        not L6'
     L7:
       s: 2
       g: 3
@@ -633,10 +637,11 @@ products:
       note: 'No credential management; agent can read sensitive files including .env, SSH keys, cloud credentials; background
         agents: KMS-encrypted env vars but accessible'
     L6:
-      s: 2
-      g: 2
-      note: 'Commands inside sandbox: auto-approved; elevated operations: HITL approval; hooks for lifecycle validation; WARNING:
-        historical shell builtin bypass (fixed Cursor 2.3)'
+      s: null
+      g: null
+      note: 'Commands inside sandbox: auto-approved; elevated operations: HITL approval; hooks for lifecycle validation.
+        Scored — (not addressed) because L6 enforcement is HITL-based — the sandbox delegates governance to the human, not
+        enforcing it itself. WARNING: historical shell builtin bypass (fixed Cursor 2.3)'
     L7:
       s: 1
       g: 1
@@ -677,9 +682,11 @@ products:
         (available in setup-steps only); can''t approve/merge own work'
     L6:
       s: 2
-      g: 3
-      note: 'PR-level HITL: agent cannot approve or merge; draft PRs require human approval before Actions run; CodeQL + secret
-        scanning + GitHub Advisory DB before completion'
+      g: 1
+      note: 'Platform-enforced: agent cannot approve or merge own PRs (GitHub branch protection rules, not HITL); draft PRs
+        require human approval before Actions run. S:2 because enforcement is by a separate system (GitHub platform) the agent
+        cannot circumvent. G:1 because control is binary (can/cannot merge). CodeQL + secret scanning + GitHub Advisory DB
+        are L7 (detection), not L6 (prevention)'
     L7:
       s: 2
       g: 2
@@ -719,10 +726,11 @@ products:
       note: Built-in Secrets Manager with org/repo/session scopes; Key-Value, JSON, TOTP, Site Cookies; encrypted at rest;
         RBAC + SSO; but secrets accessible as normal env vars in Devbox
     L6:
-      s: 2
-      g: 2
+      s: null
+      g: null
       note: 'Two non-negotiable checkpoints: (1) planning checkpoint — human reviews plan; (2) PR checkpoint — human reviews
-        code; playbooks with guardrails; chat intervention mid-session'
+        code; playbooks with guardrails; chat intervention mid-session. Scored — (not addressed) because all L6 mechanisms
+        are HITL-based — the sandbox delegates governance to the human. Agent is autonomous within the session'
     L7:
       s: 2
       g: 3
