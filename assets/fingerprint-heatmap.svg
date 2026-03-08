@@ -49,7 +49,7 @@
 <text x="311.0" y="102.0" fill="#9ca3af" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">—</text>
 <rect x="350" y="87" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="354" y="109" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="386.0" y="102.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.3</text>
+<text x="386.0" y="102.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="425" y="87" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="429" y="109" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
 <text x="461.0" y="102.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
@@ -58,7 +58,7 @@
 <text x="536.0" y="102.0" fill="#d97706" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">1.1</text>
 <rect x="575" y="87" width="72" height="28" rx="4" fill="#fffbeb" stroke="#fbbf24" stroke-width="1"/>
 <rect x="579" y="109" width="16.0" height="3" rx="1.5" fill="#fbbf24" opacity="0.6"/>
-<text x="611.0" y="102.0" fill="#d97706" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">1.3</text>
+<text x="611.0" y="102.0" fill="#d97706" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">1.2</text>
 <rect x="650" y="87" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="654" y="109" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
 <text x="686.0" y="102.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
@@ -79,7 +79,7 @@
 <text x="461.0" y="133.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
 <rect x="500" y="118" width="72" height="28" rx="4" fill="#ecfdf5" stroke="#34d399" stroke-width="1"/>
 <rect x="504" y="140" width="64.0" height="3" rx="1.5" fill="#34d399" opacity="0.6"/>
-<text x="536.0" y="133.0" fill="#059669" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">4.2</text>
+<text x="536.0" y="133.0" fill="#059669" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">4.3</text>
 <rect x="575" y="118" width="72" height="28" rx="4" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
 <text x="611.0" y="133.0" fill="#9ca3af" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">—</text>
 <rect x="650" y="118" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
@@ -119,7 +119,7 @@
 <text x="311.0" y="195.0" fill="#dc2626" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">0.0</text>
 <rect x="350" y="180" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="354" y="202" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="386.0" y="195.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.3</text>
+<text x="386.0" y="195.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="425" y="180" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="429" y="202" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
 <text x="461.0" y="195.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.1</text>
@@ -187,7 +187,7 @@
 <text x="311.0" y="288.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
 <rect x="350" y="273" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="354" y="295" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
-<text x="386.0" y="288.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
+<text x="386.0" y="288.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.1</text>
 <rect x="425" y="273" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="429" y="295" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
 <text x="461.0" y="288.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
@@ -285,7 +285,7 @@
 <text x="461.0" y="412.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
 <rect x="500" y="397" width="72" height="28" rx="4" fill="#ecfdf5" stroke="#34d399" stroke-width="1"/>
 <rect x="504" y="419" width="64.0" height="3" rx="1.5" fill="#34d399" opacity="0.6"/>
-<text x="536.0" y="412.0" fill="#059669" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">4.2</text>
+<text x="536.0" y="412.0" fill="#059669" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">4.3</text>
 <rect x="575" y="397" width="72" height="28" rx="4" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
 <text x="611.0" y="412.0" fill="#9ca3af" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">—</text>
 <rect x="650" y="397" width="72" height="28" rx="4" fill="#fffbeb" stroke="#fbbf24" stroke-width="1"/>
@@ -345,7 +345,7 @@
 <text x="236.0" y="505.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.1</text>
 <rect x="275" y="490" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="279" y="512" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="311.0" y="505.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.3</text>
+<text x="311.0" y="505.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="350" y="490" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="354" y="512" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
 <text x="386.0" y="505.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
@@ -383,7 +383,7 @@
 <text x="611.0" y="536.0" fill="#9ca3af" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">—</text>
 <rect x="650" y="521" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="654" y="543" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
-<text x="686.0" y="536.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.1</text>
+<text x="686.0" y="536.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
 <text x="765.0" y="536.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>
 <text x="855.0" y="536.0" fill="#6b7280" font-size="8" text-anchor="middle" dominant-baseline="middle">Pending Review</text>
 <text x="14" y="570.0" fill="#111827" font-size="10" font-weight="500">nono</text>
@@ -394,13 +394,13 @@
 <text x="311.0" y="567.0" fill="#9ca3af" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">—</text>
 <rect x="350" y="552" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="354" y="574" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="386.0" y="567.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.3</text>
+<text x="386.0" y="567.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="425" y="552" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="429" y="574" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
 <text x="461.0" y="567.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="500" y="552" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="504" y="574" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="536.0" y="567.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
+<text x="536.0" y="567.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.3</text>
 <rect x="575" y="552" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="579" y="574" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
 <text x="611.0" y="567.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
@@ -454,15 +454,15 @@
 <text x="765.0" y="629.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>
 <text x="855.0" y="629.0" fill="#6b7280" font-size="8" text-anchor="middle" dominant-baseline="middle">Pending Review</text>
 <text x="14" y="663.0" fill="#111827" font-size="10" font-weight="500">Replit</text>
-<rect x="200" y="645" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
-<rect x="204" y="667" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="236.0" y="660.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.1</text>
+<rect x="200" y="645" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
+<rect x="204" y="667" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
+<text x="236.0" y="660.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.1</text>
 <rect x="275" y="645" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="279" y="667" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
 <text x="311.0" y="660.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="350" y="645" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
 <rect x="354" y="667" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
-<text x="386.0" y="660.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.1</text>
+<text x="386.0" y="660.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.2</text>
 <rect x="425" y="645" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="429" y="667" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
 <text x="461.0" y="660.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.1</text>
@@ -473,7 +473,7 @@
 <text x="611.0" y="660.0" fill="#9ca3af" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">—</text>
 <rect x="650" y="645" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="654" y="667" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
-<text x="686.0" y="660.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.1</text>
+<text x="686.0" y="660.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
 <text x="765.0" y="660.0" fill="#d97706" font-size="9" font-weight="600" text-anchor="middle" dominant-baseline="middle">Docs</text>
 <text x="855.0" y="660.0" fill="#6b7280" font-size="8" text-anchor="middle" dominant-baseline="middle">Pending Review</text>
 <text x="14" y="694.0" fill="#111827" font-size="10" font-weight="500">Stakpak Warden</text>
@@ -488,12 +488,12 @@
 <rect x="425" y="676" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="429" y="698" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
 <text x="461.0" y="691.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.3</text>
-<rect x="500" y="676" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
-<rect x="504" y="698" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
-<text x="536.0" y="691.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.3</text>
+<rect x="500" y="676" width="72" height="28" rx="4" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1"/>
+<rect x="504" y="698" width="48.0" height="3" rx="1.5" fill="#a78bfa" opacity="0.6"/>
+<text x="536.0" y="691.0" fill="#7c3aed" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">3.3</text>
 <rect x="575" y="676" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="579" y="698" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
-<text x="611.0" y="691.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
+<text x="611.0" y="691.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.3</text>
 <rect x="650" y="676" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="654" y="698" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
 <text x="686.0" y="691.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
@@ -507,7 +507,7 @@
 <text x="311.0" y="722.0" fill="#dc2626" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">0.0</text>
 <rect x="350" y="707" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="354" y="729" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
-<text x="386.0" y="722.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.1</text>
+<text x="386.0" y="722.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.2</text>
 <rect x="425" y="707" width="72" height="28" rx="4" fill="#eff6ff" stroke="#60a5fa" stroke-width="1"/>
 <rect x="429" y="729" width="32.0" height="3" rx="1.5" fill="#60a5fa" opacity="0.6"/>
 <text x="461.0" y="722.0" fill="#2563eb" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="middle">2.3</text>

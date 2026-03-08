@@ -51,8 +51,9 @@ products:
       note: 'Platform quotas: CPU, memory, storage, bandwidth; auto-stop/auto-archive/auto-delete'
     L3:
       s: 2
-      g: 2
-      note: Read-only root where applicable; dedicated namespaces; procfs/sysfs partially virtualized
+      g: 1
+      note: Read-only root where applicable; dedicated namespaces; procfs/sysfs partially virtualized.
+        G:1 — conditional read-only is binary (on/off), not path-level allowlist/blocklist
     L4:
       s: 2
       g: 2
@@ -103,8 +104,9 @@ products:
       note: ''
     L7:
       s: 2
-      g: 1
-      note: Datadog + OTel integrations; sandbox stdout/stderr streaming; SOC 2 Type 2; no command-level audit
+      g: 2
+      note: Datadog + OTel integrations; sandbox stdout/stderr streaming; SOC 2 Type 2.
+        G:2 — OTel + Datadog integrations provide per-command/per-execution granularity
   notes: 'Gaps: L5 (env var delivery), L6 (no governance). Complements: Credential proxy for L5, governance overlay for L6'
   last_reviewed: null
   evidence_level: docs
@@ -250,8 +252,9 @@ products:
         cloud metadata
     L5:
       s: 4
-      g: 2
-      note: 'Credential proxy: keys NEVER enter sandbox; proxy auto-injects auth headers for OpenAI, Anthropic, Google, GitHub'
+      g: 3
+      note: 'Credential proxy: keys NEVER enter sandbox; proxy auto-injects auth headers for OpenAI, Anthropic, Google, GitHub.
+        S:4 — external credential proxy (secrets never enter sandbox). G:3 — per-service auth header injection is per-resource policy'
     L6:
       s: null
       g: null
@@ -276,9 +279,9 @@ products:
         open-source kubernetes-sigs/agent-sandbox
     L2:
       s: 3
-      g: 3
+      g: 2
       note: 'K8s-native resource limits: cpu_limit, mem_limit, timeout_seconds per executor; WarmPool CRD pre-warms with defined
-        budgets'
+        budgets. G:2 — per-resource CPU/memory limits are configurable allowlists, not content-aware (G:3)'
     L3:
       s: 3
       g: 2
@@ -325,8 +328,9 @@ products:
       note: No documented CPU/memory/disk/time limits; standard Docker defaults apply
     L3:
       s: 2
-      g: 1
-      note: Working directory bind-mounted (read/write, changes reflect on host); optional agent config mounts
+      g: 2
+      note: Working directory bind-mounted (read/write, changes reflect on host); optional agent config mounts.
+        G:2 — working-dir mount with optional config mounts constitutes a path allowlist
     L4:
       s: 2
       g: 3
@@ -377,15 +381,17 @@ products:
       note: Transparent proxy with Cedar policies; every network request routed through proxy; deterministic guardrails; capped
         by L1:2
     L5:
-      s: 2
+      s: 3
       g: 3
       note: 210+ secret types detected and substituted with placeholders before LLM sees them; real values restored at execution
-        by proxy; privacy mode; capped by L1:2
+        by proxy; privacy mode.
+        S:3 — placeholder substitution (secrets swapped with tokens, restored at execution only). Enforcement is external (proxy outside sandbox), not constrained by L1
     L6:
       s: 2
-      g: 2
+      g: 3
       note: Per-profile allowed_tools configuration; auto-approve per tool; custom Warden policies (enterprise); rulebooks
-        for SOPs; bulk message approval for HITL
+        for SOPs; bulk message approval for HITL.
+        G:3 — Cedar policy engine provides fine-grained per-action/resource/context rules
     L7:
       s: 2
       g: 2
@@ -411,9 +417,10 @@ products:
       note: ''
     L3:
       s: 3
-      g: 3
+      g: 2
       note: Default-deny; granular per-path read/write; sensitive paths blocked by default (~/.ssh, ~/.aws, shell configs,
-        browser cookies); atomic rollback snapshots with integrity
+        browser cookies); atomic rollback snapshots with integrity.
+        G:2 — per-path rules are allowlist/blocklist, not content-aware (G:3 requires HTTP/body inspection)
     L4:
       s: 3
       g: 2
@@ -421,9 +428,10 @@ products:
         creation; proxy enforcement outside sandbox
     L5:
       s: 3
-      g: 2
+      g: 3
       note: 'Two modes: (1) proxy injection — real credentials never enter sandbox; (2) env injection from OS keystore/1Password;
-        phantom keys when access blocked; capped by L1:3'
+        phantom keys when access blocked.
+        G:3 — proxy mechanism provides per-resource credential handling (per-service injection). Enforcement is external (proxy outside sandbox), not constrained by L1'
     L6:
       s: 3
       g: 2
@@ -494,9 +502,10 @@ products:
       note: ''
     L3:
       s: 3
-      g: 3
+      g: 2
       note: 'Write: CWD and subdirs only; read: entire system EXCEPT denied paths; deny rules accumulate across 3 config levels;
-        global denies cannot be overridden'
+        global denies cannot be overridden.
+        G:2 — path-level deny rules are allowlist/blocklist, not content-aware'
     L4:
       s: 3
       g: 2
@@ -509,10 +518,11 @@ products:
         in shell session are visible; no vault or credential proxy'
     L6:
       s: 1
-      g: 3
+      g: 2
       note: 5 permission modes (Normal → Bypass); two sandbox modes; command blocklist (curl, wget) — S:1 because blocklist
-        is bypassable via libraries/scripts/aliases; PreToolUse hooks for programmatic approval/denial add G:3 but hooks
-        only govern tool calls within the Claude framework, not arbitrary shell execution; enterprise managed settings
+        is bypassable via libraries/scripts/aliases. G:2 — blocklist is allowlist/blocklist granularity; PreToolUse hooks
+        are framework-specific (govern Claude tool calls only, not arbitrary shell execution), not semantic action governance;
+        enterprise managed settings
     L7:
       s: 2
       g: 2
@@ -546,9 +556,10 @@ products:
         specific domains; git ops through credential proxy with branch validation'
     L5:
       s: 4
-      g: 2
+      g: 3
       note: Credentials NEVER placed inside sandbox VM; git auth via scoped-credential proxy that translates to real GitHub
-        tokens outside sandbox; branch restrictions enforced by proxy
+        tokens outside sandbox; branch restrictions enforced by proxy.
+        S:4 — external credential proxy. G:3 — scoped per-branch/per-repo credential policies
     L6:
       s: null
       g: null
@@ -580,9 +591,10 @@ products:
       note: No CPU/memory/disk caps; 1800s worker timeout in multi-agent mode (agent-level, not sandbox-level)
     L3:
       s: 3
-      g: 3
+      g: 2
       note: 'Three modes: read-only, workspace-write (CWD + /tmp only, default), danger-full-access; Landlock ruleset whitelists
-        writable roots; requires git repo'
+        writable roots; requires git repo.
+        G:2 — Landlock path whitelists are allowlist/blocklist, not content-aware'
     L4:
       s: 3
       g: 1
@@ -747,17 +759,19 @@ products:
   - cloud-managed
   layers:
     L1:
-      s: 3
+      s: 2
       g: 1
-      note: Docker namespaces + cgroups; one container per Repl; shared host kernel on GCP VMs; Nix-based full Linux runtime
+      note: Docker namespaces + cgroups; one container per Repl; shared host kernel on GCP VMs; Nix-based full Linux runtime.
+        S:2 — software-enforced via Linux namespaces with shared host kernel; no seccomp/Landlock/Seatbelt evidence to justify S:3
     L2:
       s: 3
       g: 2
       note: 1–4 vCPU, 2–8 GB RAM, 2–50 GB disk; cgroups + btrfs quotas; kernel-enforced
     L3:
       s: 3
-      g: 1
-      note: Persistent btrfs filesystem; Docker mount namespaces; Margarine/NBD from GCS for storage; not ephemeral
+      g: 2
+      note: Persistent btrfs filesystem; Docker mount namespaces; Margarine/NBD from GCS for storage; not ephemeral.
+        G:2 — Docker mount namespaces provide path-level granularity (allowlist of mounted paths)
     L4:
       s: 2
       g: 1
@@ -775,8 +789,9 @@ products:
         No runtime policy engine governs what the agent does with the access it has
     L7:
       s: 2
-      g: 1
-      note: Console logs; resource monitor; enterprise audit logging; no OTel or Logpush integration
+      g: 2
+      note: Console logs; resource monitor; enterprise audit logging; no OTel or Logpush integration.
+        G:2 — console logs and enterprise audit provide per-command granularity
   notes: 'L6 now — (seccomp/capabilities are L1, not L6). Persistent filesystem means T5 relies on L1+L3+L6 — with L6
     now unaddressed, T5 drops to partial. L4 permissive egress is weakest
     link — rate-limited but no allowlist. Complements: Egress allowlist for L4 upgrade'

@@ -29,7 +29,7 @@ Layers are numbered **bottom-up** because lower layers are foundational.
 
 - **Lower layers are foundational.** Strong L1 makes L3 easier (a microVM gets a fresh filesystem by default).
 - **Upper layers CANNOT be derived from lower ones.** A microVM with perfect L1 but no L4 still lets the agent exfiltrate secrets via a single outbound request. A system with impeccable L1–L5 but no L7 gives you no way to detect misuse.
-- **No upper layer can be stronger than L1**, because a process that escapes L1 bypasses everything above it.
+- **No layer whose enforcement depends on L1's boundary can be stronger than L1.** A process that escapes L1 bypasses any layer enforced *inside* the sandbox. However, layers with enforcement mechanisms that operate *outside* the sandbox — such as L2 (host-level cgroups), L5 (external credential proxy), or L7 (external logging) — are independent of L1 and can legitimately score higher.
 
 ### Layer Definitions
 
@@ -491,7 +491,7 @@ For each layer note, include: (1) the mechanism name, (2) how enforcement works,
 ### Step 5: Validate
 
 Run these sanity checks on your score card:
-- **No upper layer is stronger than L1** in strength. If L1 is S:2, no other layer can realistically be S:4 (the isolation foundation is weaker than the claim).
+- **No layer whose enforcement depends on L1's boundary is stronger than L1.** If L1 is S:2, layers enforced *inside* the sandbox cannot realistically be S:4. But layers with independent external enforcement (e.g., L2 host cgroups, L5 external credential proxy, L7 external audit) can score higher than L1 because an L1 escape does not bypass them.
 - **Cooperative mechanisms are always S:1.** If you scored something S:2+ but the process can bypass it, downgrade.
 - **L4:0 with credentials present = T1 risk.** Flag this explicitly.
 - **Threat scores must match threshold rules.** Re-derive each threat symbol from the layer scores using the rules in Step 3. If your intuitive assessment differs from the mechanical result, the mechanical result wins.

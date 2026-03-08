@@ -98,7 +98,7 @@ Layers are numbered bottom-up because lower layers are foundational. Strong L1 m
 ### L1 — Compute Isolation
 *What separates the agent's execution from the host system?*
 
-L1 is the foundation. No upper layer can be stronger, because a process that escapes L1 bypasses everything above it. What matters is the **size of the shared attack surface** between the sandboxed workload and the host, ranging from the full host kernel (containers), through a reduced syscall surface (user-space kernels), to a minimal VMM (microVMs), to a single-purpose kernel (unikernels), to hardware-encrypted memory (confidential computing). See **[Appendix A](#appendix-a-layer-mechanism-reference)** for the mechanism spectrum.
+L1 is the foundation. No layer whose enforcement depends on L1's boundary can be stronger — a process that escapes L1 bypasses any layer enforced *inside* the sandbox. However, layers with independent enforcement outside the sandbox (e.g., L2 host cgroups, L5 external credential proxy, L7 external logging) are not constrained by L1. What matters is the **size of the shared attack surface** between the sandboxed workload and the host, ranging from the full host kernel (containers), through a reduced syscall surface (user-space kernels), to a minimal VMM (microVMs), to a single-purpose kernel (unikernels), to hardware-encrypted memory (confidential computing). See **[Appendix A](#appendix-a-layer-mechanism-reference)** for the mechanism spectrum.
 
 ### L2 — Resource Limits
 *Can the agent exhaust CPU, memory, disk, or time?*
