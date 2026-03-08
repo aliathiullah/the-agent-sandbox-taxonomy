@@ -103,7 +103,7 @@ L1 is the foundation. No layer whose enforcement depends on L1's boundary can be
 ### L2 — Resource Limits
 *Can the agent exhaust CPU, memory, disk, or time?*
 
-A fork bomb or memory leak can denial-of-service the host even inside a perfect L1 boundary. Enforcement must happen **outside the sandbox**: cgroups on the host, or VM resource allocation by the hypervisor. An agent with root inside its sandbox can bypass in-sandbox resource controls but cannot escape hypervisor-level caps.
+A fork bomb or memory leak can denial-of-service the host even inside a perfect L1 boundary. Enforcement must happen **outside the sandbox**: cgroups on the host, or VM resource allocation by the hypervisor. An agent with root inside its sandbox can bypass in-sandbox resource controls but cannot escape hypervisor-level caps. **L2 is about host resource enforcement** — CPU, memory, disk, and time caps on the sandbox process or VM. API rate limits, billing quotas, and usage metering (e.g., "Actions minutes", "ACU budgets") are business controls, not sandbox resource caps — they do not prevent a fork bomb or memory exhaustion within a session.
 
 ### L3 — Filesystem Boundary
 *What can the agent read, write, and delete on disk?*
@@ -120,7 +120,7 @@ The most underappreciated layer. An agent inside a perfect compute sandbox with 
 ### L5 — Credential & Secret Management
 *Can the agent see, use, or exfiltrate credentials?*
 
-Even with strong L1–L4, an agent with API keys can embed them in generated code or commit them to a repo. Ideally, credentials are **never present** in the agent's environment. Ranges from full credential access through file blocking, env-var filtering, placeholder substitution (secrets detected and swapped with tokens, restored at execution), credential proxying (external proxy authenticates on behalf), to ephemeral per-session tokens.
+Even with strong L1–L4, an agent with API keys can embed them in generated code or commit them to a repo. Ideally, credentials are **never present** in the agent's environment. Ranges from full credential access through file blocking, env-var filtering, placeholder substitution (secrets detected and swapped with tokens, restored at execution), credential proxying (external proxy authenticates on behalf), to ephemeral per-session tokens. **L5 is about what the agent can see and access inside the sandbox.** Encryption at rest and TLS in transit protect data from external attackers, not from the agent — they are not L5 mechanisms.
 
 ### L6 — Action Governance
 *Can the agent perform destructive or unauthorized operations?*
@@ -129,12 +129,12 @@ L6 is different from L1–L5. Those layers restrict **access to resources**. L6 
 
 L6 operates at a **semantic level** that cuts across lower layers. L3 says "you cannot write to this path." L4 says "you cannot connect to this destination." L6 says "you cannot delete production resources," governing intent and effect regardless of which layer the action flows through. This lets L6 express policies no single lower layer can.
 
-The tradeoff is that L6 is generally software-enforced and bypassable in ways kernel/hardware enforcement is not. A command blocklist can be circumvented via shell redirection. L6 is defense-in-depth, most valuable on top of strong L1–L4.
+The tradeoff is that L6 is generally software-enforced and bypassable in ways kernel/hardware enforcement is not. A command blocklist can be circumvented via shell redirection. L6 is defense-in-depth, most valuable on top of strong L1–L4. **L6 is not L1.** Kernel-level syscall filtering (seccomp, BPF LSM, capabilities) restricts what system calls a process can make — that is compute isolation (L1), not action governance. L6 governs what the agent does with the access it has at a semantic level, not what syscalls it can invoke.
 
 ### L7 — Observability & Audit
 *Can you see what the agent did, when, and why?*
 
-Without observability, you cannot detect misuse, investigate incidents, improve policies, or demonstrate compliance. L7 turns a sandbox from a static boundary into an **adaptive security system**. Ranges from no logging through session-level logs, command-level audit, full telemetry (network, syscalls, MCP tool calls, real-time UI), to cryptographic audit chains (tamper-evident logs with provenance tracking).
+Without observability, you cannot detect misuse, investigate incidents, improve policies, or demonstrate compliance. L7 turns a sandbox from a static boundary into an **adaptive security system**. Ranges from no logging through session-level logs, command-level audit, full telemetry (network, syscalls, MCP tool calls, real-time UI), to cryptographic audit chains (tamper-evident logs with provenance tracking). **Compliance certifications (SOC 2, ISO 27001) are not L7 scores** — they indicate organizational controls, not sandbox enforcement mechanisms.
 
 ---
 

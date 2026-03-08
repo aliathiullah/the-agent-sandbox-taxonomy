@@ -48,7 +48,8 @@ products:
     L2:
       s: 2
       g: 2
-      note: 'Platform quotas: CPU, memory, storage, bandwidth; auto-stop/auto-archive/auto-delete'
+      note: 'Platform-enforced per-workspace quotas: CPU, memory, storage, bandwidth caps; auto-stop/auto-archive/auto-delete.
+        S:2 — platform quotas enforced outside the sandbox (not billing controls — these are actual resource caps per workspace)'
     L3:
       s: 2
       g: 1
@@ -217,9 +218,10 @@ products:
       g: null
       note: ''
     L7:
-      s: 0
-      g: 0
-      note: Audit trail and metrics monitoring both ON ROADMAP; instance state tracking with timestamps exists
+      s: 1
+      g: 1
+      note: Instance state tracking with timestamps exists (session-level logs).
+        Audit trail and metrics monitoring both ON ROADMAP — roadmap features not scored
   notes: 'Gaps: L4 (no egress filtering), L5 (no secrets management), L6 (no governance), L7 (roadmap only). Not designed
     as agent sandbox'
   last_reviewed: null
@@ -677,8 +679,9 @@ products:
     L2:
       s: 4
       g: 2
-      note: 'Actions runner specs: 2-core CPU, 7GB RAM, 14GB SSD (standard Ubuntu); job timeouts; usage metered against Actions
-        minutes'
+      note: 'Actions runner specs: 2-core CPU, 7GB RAM, 14GB SSD (standard Ubuntu); job timeouts.
+        S:4 — fixed VM resource allocation at creation (hypervisor-enforced). Usage metering (Actions minutes) is a billing
+        control, not a sandbox resource cap'
     L3:
       s: 4
       g: 2
@@ -722,8 +725,9 @@ products:
     L2:
       s: 2
       g: 2
-      note: ACU-metered (~1 ACU ≈ 15min active work); auto-sleep after ~0.1 ACU inactivity; Large Performant VM option; ACU
-        budgets configurable
+      note: 'Auto-sleep after ~0.1 ACU inactivity; Large Performant VM option.
+        S:2 — platform-enforced session timeouts and auto-sleep. ACU metering is a billing control, not a sandbox resource
+        cap — it does not prevent fork bombs or memory exhaustion within a session'
     L3:
       s: 4
       g: 2
@@ -930,30 +934,33 @@ products:
     L3:
       s: 4
       g: 1
-      note: Full independent VM filesystem; no host paths visible; ephemeral by design (wiped on destruction); EBS volume
-        per instance; Veto BPF LSM provides kernel-level file access enforcement (exec gate shipped, file access gate planned).
-        NEEDS REVIEW — filesystem protection granularity not fully documented in API/CLI
+      note: 'Full independent VM filesystem; no host paths visible; ephemeral by design (wiped on destruction); EBS volume
+        per instance. S:4 — structural (separate disk, no host paths visible).
+        Veto BPF LSM exec gate is L1 compute isolation, not L3; file access gate is planned (roadmap, not scored).
+        NEEDS REVIEW — filesystem protection granularity not fully documented in API/CLI'
     L4:
       s: 2
       g: 2
       note: VPC security groups and NACLs; customer VPC with native network access; host/port/protocol allowlists via guardrails
-        page; PrivateLink to management plane. WARNING — BPF LSM network enforcement is roadmap (next quarter), current enforcement
-        is VPC-level (software-enforced)
+        page; PrivateLink to management plane. S:2 — software-enforced (VPC-level).
+        BPF LSM network enforcement is roadmap (next quarter) — roadmap features not scored
     L5:
       s: 2
       g: 2
-      note: Three-tier secrets (user/project/org) as env vars or files; AES256-GCM at rest + TLS in transit; OIDC for short-lived
-        scoped cloud tokens (eliminates static creds for AWS/GCP). WARNING — memory controls claimed on marketing page but
-        undocumented in API/CLI; default delivery is env vars visible inside VM
+      note: 'Three-tier secrets (user/project/org) as env vars or files; OIDC for short-lived scoped cloud tokens
+        (eliminates static creds for AWS/GCP). S:2 — env-var filtering (scoped delivery). Default delivery is env vars
+        visible inside VM. Note: encryption at rest (AES256-GCM) and TLS in transit protect from external attackers,
+        not from the agent inside the sandbox — not scored as L5. WARNING — memory controls claimed on marketing page
+        but undocumented in API/CLI'
     L6:
-      s: 2
+      s: 1
       g: 2
-      note: 'Veto executable deny list: BPF LSM kernel enforcement; SHA-256 content-addressable hashing; rename/symlink/copy
-        resistant; pre-execution blocking; TOCTOU-free; audit+block modes; max 20 entries. Also command deny list (userspace,
-        agent-only, S:1). CrowdStrike Falcon EDR as sidecar. WARNING — Veto is early access/feature flag (Enterprise only);
-        dynamic linker bypass acknowledged (ld.so can load blocked binaries); max 20 entries limits coverage. Scored S:2 not
-        S:3 due to known bypass and feature-flag status. NEEDS REVIEW — re-evaluate when dynamic linker bypass is fixed and
-        Veto exits feature flag'
+      note: 'Command deny list (userspace, agent-only) = S:1 (cooperative, bypassable via alternative tools).
+        Veto executable deny list (BPF LSM kernel enforcement) is L1 compute isolation, not L6 action governance —
+        BPF LSM enforces syscall-level restrictions (what processes can execute), not semantic action governance
+        (what the agent does with access it has). CrowdStrike Falcon EDR is L7 (detection), not L6 (prevention).
+        WARNING — Veto is early access/feature flag (Enterprise only); dynamic linker bypass acknowledged.
+        NEEDS REVIEW — re-evaluate when Veto exits feature flag'
     L7:
       s: 2
       g: 2
